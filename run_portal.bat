@@ -19,6 +19,8 @@ if %errorlevel% neq 0 (
 )
 
 echo [INFO] Starting Local Server at http://127.0.0.1:5000 ...
+echo [INFO] Public Portal: http://127.0.0.1:5000
+echo [INFO] Admin Panel:   http://127.0.0.1:5000/admin (Default: admin / admin123)
 start "" "http://127.0.0.1:5000"
 python app.py
 pause

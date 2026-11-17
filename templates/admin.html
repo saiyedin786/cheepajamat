@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Control Panel — Chheepa Samaj Khanda Falsa, Jodhpur</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', 'Noto Sans Devanagari', sans-serif;
+            background-color: #f8fafc;
+        }
+        .jodhpur-gradient {
+            background: linear-gradient(135deg, #091024 0%, #1e3a8a 55%, #1d4ed8 100%);
+        }
+        .block-pattern {
+            background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 16px 16px;
+        }
+        .dragover {
+            border-color: #2563eb !important;
+            background-color: #eff6ff !important;
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Top Admin Header -->
+    <header class="jodhpur-gradient text-white shadow-xl relative overflow-hidden">
+        <div class="block-pattern absolute inset-0 pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 relative z-10">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="px-3.5 py-2 rounded-2xl bg-amber-500/20 border-2 border-amber-400 flex flex-col items-center justify-center text-amber-300 font-extrabold shadow-inner shrink-0">
+                        <span class="text-base sm:text-lg">छीपा</span>
+                        <span class="text-xs text-amber-200">जमात</span>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider bg-rose-500/20 text-rose-300 rounded-full border border-rose-400/40 flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-rose-400 animate-pulse"></span>
+                                Secure Admin Panel • पासवर्ड सुरक्षित
+                            </span>
+                            <span class="text-xs text-blue-200 hidden sm:inline">Khanda Falsa, Jodhpur</span>
+                        </div>
+                        <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight mt-1 text-white">
+                            Administrator Control Center
+                        </h1>
+                        <p class="text-blue-200 text-xs sm:text-sm">
+                            Manage Samaj census, upload data in CSV / Excel / JSON formats, and manage members.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Admin Status & Action Links -->
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <div class="px-3 py-1.5 rounded-xl bg-blue-900/70 border border-blue-700/60 text-xs text-blue-200 flex items-center gap-2">
+                        <span class="text-amber-400 font-bold">👑 Admin:</span>
+                        <span id="currentAdminName" class="font-semibold text-white">admin</span>
+                    </div>
+                    <a href="/" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/20 transition flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                        <span>Public Directory</span>
+                    </a>
+                    <button onclick="handleLogout()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white shadow transition flex items-center gap-1.5 cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab Navigation Bar -->
+            <div class="flex flex-wrap items-center gap-2 mt-5 pt-4 border-t border-blue-800/60">
+                <button onclick="switchAdminTab('overview')" id="tabBtn-overview" class="px-4 py-2 rounded-xl font-bold text-xs sm:text-sm transition flex items-center gap-2 bg-white text-blue-950 shadow">
+                    📊 Overview & Stats
+                </button>
+                <button onclick="switchAdminTab('upload')" id="tabBtn-upload" class="px-4 py-2 rounded-xl font-bold text-xs sm:text-sm transition flex items-center gap-2 bg-amber-400 hover:bg-amber-300 text-slate-950 shadow">
+                    📤 Bulk Upload (CSV / Excel / JSON)
+                </button>
+                <button onclick="switchAdminTab('members')" id="tabBtn-members" class="px-4 py-2 rounded-xl font-bold text-xs sm:text-sm transition flex items-center gap-2 bg-blue-900/60 hover:bg-blue-800 text-white border border-blue-700">
+                    👥 Member Records Manager
+                </button>
+                <button onclick="switchAdminTab('security')" id="tabBtn-security" class="px-4 py-2 rounded-xl font-bold text-xs sm:text-sm transition flex items-center gap-2 bg-blue-900/60 hover:bg-blue-800 text-white border border-blue-700">
+                    🔒 Security & Password
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Global Toast Alert Banner -->
+    <div id="toastAlert" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 w-full">
+        <div id="toastInner" class="p-4 rounded-2xl border font-medium flex items-center justify-between shadow-sm">
+            <div class="flex items-center gap-3">
+                <span id="toastIcon" class="text-lg">ℹ️</span>
+                <span id="toastText" class="text-sm"></span>
+            </div>
+            <button onclick="dismissToast()" class="text-xs underline font-semibold ml-4">Dismiss</button>
+        </div>
+    </div>
+
+    <!-- Main Admin Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
+
+        <!-- ========================================== -->
+        <!-- TAB 1: OVERVIEW & SYSTEM METRICS -->
+        <!-- ========================================== -->
+        <div id="view-overview" class="space-y-6">
+            <!-- Metric KPI Cards -->
+            <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Members</p>
+                        <p id="kpiTotalMembers" class="text-3xl font-extrabold text-blue-950 mt-1">0</p>
+                        <p class="text-[11px] text-blue-600 font-medium mt-1">Registered in database</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl">
+                        👥
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Families</p>
+                        <p id="kpiTotalFamilies" class="text-3xl font-extrabold text-amber-950 mt-1">0</p>
+                        <p class="text-[11px] text-amber-600 font-medium mt-1">Unique Family IDs</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">
+                        🏠
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Male / Female</p>
+                        <p id="kpiGenderRatio" class="text-2xl font-extrabold text-emerald-950 mt-1">0 / 0</p>
+                        <p class="text-[11px] text-emerald-600 font-medium mt-1">Gender distribution</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+                        ⚖️
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Database Status</p>
+                        <p class="text-xl font-extrabold text-slate-900 mt-1 flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Active
+                        </p>
+                        <p id="kpiDbSize" class="text-[11px] text-slate-500 font-mono mt-1">SQLite 3 • Ready</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl">
+                        🗄️
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Action Hub Banner -->
+            <div class="bg-gradient-to-r from-blue-900 to-indigo-950 text-white rounded-3xl p-6 sm:p-8 shadow-md relative overflow-hidden">
+                <div class="relative z-10 max-w-3xl">
+                    <span class="px-3 py-1 rounded-full bg-amber-400 text-slate-950 font-extrabold text-xs tracking-wider uppercase">
+                        Admin Data Pipeline
+                    </span>
+                    <h2 class="text-2xl font-extrabold mt-3">Ready to import or backup Samaj Census Data?</h2>
+                    <p class="text-blue-200 text-sm mt-1">
+                        Use the dedicated Bulk Upload tool to import hundreds of member records directly from Excel (.xlsx), CSV, or JSON backup files. Preview each row before committing to the live database.
+                    </p>
+                    <div class="flex flex-wrap items-center gap-3 mt-5">
+                        <button onclick="switchAdminTab('upload')" class="px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs sm:text-sm shadow-md transition flex items-center gap-2 cursor-pointer">
+                            <span>📤 Upload CSV / Excel / JSON File</span>
+                        </button>
+                        <a href="/api/export/excel" class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 font-semibold text-xs sm:text-sm transition flex items-center gap-1.5">
+                            <span>📥 Export Excel (.xlsx)</span>
+                        </a>
+                        <a href="/api/export/csv" class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 font-semibold text-xs sm:text-sm transition flex items-center gap-1.5">
+                            <span>📥 Export CSV</span>
+                        </a>
+                        <a href="/api/export/json" class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 font-semibold text-xs sm:text-sm transition flex items-center gap-1.5">
+                            <span>📥 Export JSON Backup</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Recent Members Overview Table -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+                <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900">Recent Member Records in Database</h3>
+                        <p class="text-xs text-slate-500">Live preview of current directory entries</p>
+                    </div>
+                    <button onclick="switchAdminTab('members')" class="text-xs font-semibold text-blue-600 hover:text-blue-800 underline">
+                        View & Manage All Members →
+                    </button>
+                </div>
+                <div class="overflow-x-auto mt-4">
+                    <table class="w-full text-left text-xs text-slate-600">
+                        <thead class="bg-slate-50 text-slate-700 font-bold uppercase tracking-wider border-b border-slate-200">
+                            <tr>
+                                <th class="p-3">Code</th>
+                                <th class="p-3">Full Name (English / Hindi)</th>
+                                <th class="p-3">Family ID</th>
+                                <th class="p-3">Relation</th>
+                                <th class="p-3">Age / Gender</th>
+                                <th class="p-3">Primary Phone</th>
+                                <th class="p-3">Mohalla</th>
+                            </tr>
+                        </thead>
+                        <tbody id="overviewRecentTableBody" class="divide-y divide-slate-100 font-medium">
+                            <tr>
+                                <td colspan="7" class="p-4 text-center text-slate-400">Loading records...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- TAB 2: BULK UPLOAD (CSV / EXCEL / JSON)   -->
+        <!-- ========================================== -->
+        <div id="view-upload" class="hidden space-y-6">
+
+            <!-- Information Card -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-100">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 font-extrabold text-xs uppercase">
+                                Multi-Format Data Ingestion
+                            </span>
+                            <span class="text-xs font-bold text-slate-500">Supported: .csv, .xlsx, .xls, .json</span>
+                        </div>
+                        <h2 class="text-xl font-extrabold text-slate-900 mt-1">Upload Member & Census Records</h2>
+                        <p class="text-xs sm:text-sm text-slate-600 mt-0.5">
+                            Seamlessly import census records into the SQLite database with automatic field matching, data validation, and dry-run preview.
+                        </p>
+                    </div>
+
+                    <!-- Download Sample Templates Button Group -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-xs font-bold text-slate-500 mr-1">Sample Templates:</span>
+                        <a href="/admin/api/templates/csv" download class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1 border border-slate-200">
+                            <span>📄 CSV Template</span>
+                        </a>
+                        <a href="/admin/api/templates/excel" download class="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold transition flex items-center gap-1 border border-emerald-200">
+                            <span>📊 Excel (.xlsx)</span>
+                        </a>
+                        <a href="/admin/api/templates/json" download class="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 text-xs font-bold transition flex items-center gap-1 border border-blue-200">
+                            <span>📦 JSON Template</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Drag & Drop Zone -->
+                <div class="mt-6">
+                    <div
+                        id="dropZone"
+                        ondragover="handleDragOver(event)"
+                        ondragleave="handleDragLeave(event)"
+                        ondrop="handleFileDrop(event)"
+                        onclick="document.getElementById('fileUploadInput').click()"
+                        class="border-2 border-dashed border-slate-300 rounded-3xl p-8 sm:p-12 text-center bg-slate-50 hover:bg-blue-50/50 hover:border-blue-400 transition cursor-pointer group relative"
+                    >
+                        <input
+                            type="file"
+                            id="fileUploadInput"
+                            accept=".csv, .xlsx, .xls, .json, application/json, text/csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                            class="hidden"
+                            onchange="handleFileSelect(event)"
+                        />
+                        
+                        <div class="w-16 h-16 rounded-2xl bg-white shadow-sm border border-slate-200 text-blue-600 flex items-center justify-center mx-auto text-2xl group-hover:scale-110 transition">
+                            📤
+                        </div>
+                        
+                        <h3 class="text-base sm:text-lg font-bold text-slate-800 mt-4">
+                            Click to select a file or drag & drop here
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-1 max-w-md mx-auto">
+                            Upload your census list in <span class="font-bold text-slate-700">CSV (.csv)</span>, <span class="font-bold text-slate-700">Excel (.xlsx / .xls)</span>, or <span class="font-bold text-slate-700">JSON (.json)</span> format.
+                        </p>
+
+                        <div class="flex items-center justify-center gap-3 mt-4">
+                            <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800">Excel (.xlsx)</span>
+                            <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-800">CSV (.csv)</span>
+                            <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-purple-100 text-purple-800">JSON (.json)</span>
+                        </div>
+                    </div>
+
+                    <!-- Selected File Pill -->
+                    <div id="selectedFileInfo" class="hidden mt-4 p-4 rounded-2xl bg-blue-50 border border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div id="fileTypeBadge" class="w-10 h-10 rounded-xl bg-blue-600 text-white font-extrabold flex items-center justify-center text-xs shrink-0">
+                                FILE
+                            </div>
+                            <div>
+                                <p id="selectedFileName" class="text-sm font-bold text-slate-900 break-all"></p>
+                                <p id="selectedFileSize" class="text-xs text-slate-500"></p>
+                            </div>
+                        </div>
+                        <button onclick="clearSelectedFile()" class="text-xs font-semibold text-rose-600 hover:text-rose-800 underline self-start sm:self-center">
+                            Remove File
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Import Mode / Strategy Selection -->
+                <div class="mt-6 pt-5 border-t border-slate-100">
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2.5">
+                        Choose Ingestion Strategy (आयात रणनीति चुनें)
+                    </label>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <label class="p-3.5 rounded-2xl border-2 border-blue-200 bg-blue-50/40 hover:bg-blue-50 transition cursor-pointer flex items-start gap-3">
+                            <input type="radio" name="importMode" value="append" checked class="mt-1 text-blue-600 focus:ring-blue-500" />
+                            <div>
+                                <p class="text-xs font-bold text-slate-900">➕ Append Mode (जोड़ें - अनुशंसित)</p>
+                                <p class="text-[11px] text-slate-500 mt-0.5">
+                                    Inserts new records into the database. If a Member Code already exists, a new unique code will automatically be assigned.
+                                </p>
+                            </div>
+                        </label>
+
+                        <label class="p-3.5 rounded-2xl border-2 border-slate-200 hover:bg-slate-50 transition cursor-pointer flex items-start gap-3">
+                            <input type="radio" name="importMode" value="update" class="mt-1 text-blue-600 focus:ring-blue-500" />
+                            <div>
+                                <p class="text-xs font-bold text-slate-900">🔄 Update & Merge (अद्यतन करें)</p>
+                                <p class="text-[11px] text-slate-500 mt-0.5">
+                                    If a Member Code or Name + Primary Phone matches an existing person, their record is updated; otherwise new record is inserted.
+                                </p>
+                            </div>
+                        </label>
+
+                        <label class="p-3.5 rounded-2xl border-2 border-rose-200 bg-rose-50/20 hover:bg-rose-50/50 transition cursor-pointer flex items-start gap-3">
+                            <input type="radio" name="importMode" value="replace" class="mt-1 text-rose-600 focus:ring-rose-500" />
+                            <div>
+                                <p class="text-xs font-bold text-rose-900">⚠️ Replace All (सभी बदलें)</p>
+                                <p class="text-[11px] text-rose-600 mt-0.5">
+                                    Deletes all existing members and completely overwrites database with the uploaded file.
+                                </p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Action Buttons: Preview & Commit -->
+                <div class="mt-6 flex flex-wrap items-center gap-3">
+                    <button
+                        id="btnPreviewUpload"
+                        onclick="previewUploadedFile()"
+                        disabled
+                        class="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs sm:text-sm shadow transition flex items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        <span>🔍 Preview Data First (पूर्वावलोकन)</span>
+                    </button>
+
+                    <button
+                        id="btnCommitUpload"
+                        onclick="commitUploadedFile()"
+                        disabled
+                        class="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                        <span>🚀 Commit & Import into Database</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- PREVIEW CONTAINER (Dynamically Populated) -->
+            <div id="previewCard" class="hidden bg-white rounded-2xl border border-blue-200 p-6 shadow-sm space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                            <h3 class="text-base font-bold text-slate-900">Upload Data Preview (पूर्वावलोकन)</h3>
+                        </div>
+                        <p id="previewSummaryText" class="text-xs text-slate-500 mt-0.5">Found records ready for import.</p>
+                    </div>
+                    <button onclick="document.getElementById('previewCard').classList.add('hidden')" class="text-xs text-slate-400 hover:text-slate-700 underline">
+                        Hide Preview
+                    </button>
+                </div>
+
+                <!-- Detected Columns Chip Strip -->
+                <div>
+                    <p class="text-xs font-semibold text-slate-700 mb-2">Detected & Mapped Columns:</p>
+                    <div id="previewColumnChips" class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-1 bg-slate-50 rounded-xl border border-slate-100"></div>
+                </div>
+
+                <!-- Preview Rows Table -->
+                <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                    <table class="w-full text-left text-xs text-slate-600">
+                        <thead class="bg-blue-900 text-white font-bold uppercase tracking-wider">
+                            <tr>
+                                <th class="p-2.5">Row</th>
+                                <th class="p-2.5">Full Name</th>
+                                <th class="p-2.5">Hindi Name</th>
+                                <th class="p-2.5">Relation</th>
+                                <th class="p-2.5">Age / Gender</th>
+                                <th class="p-2.5">Family ID</th>
+                                <th class="p-2.5">Phone</th>
+                                <th class="p-2.5">Mohalla</th>
+                                <th class="p-2.5">Gotra</th>
+                            </tr>
+                        </thead>
+                        <tbody id="previewTableBody" class="divide-y divide-slate-100 font-medium"></tbody>
+                    </table>
+                </div>
+
+                <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between">
+                    <span>✨ Data looks accurate? Click <strong>"Commit & Import into Database"</strong> above to write these records into SQLite!</span>
+                </div>
+            </div>
+
+            <!-- IMPORT RESULTS REPORT CARD -->
+            <div id="importResultCard" class="hidden bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                        <span>📊 Import Operation Summary</span>
+                    </h3>
+                    <button onclick="document.getElementById('importResultCard').classList.add('hidden')" class="text-xs text-slate-400 hover:text-slate-700 underline">
+                        Dismiss
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 text-center">
+                        <p class="text-xs text-slate-500 font-semibold">Total Rows Parsed</p>
+                        <p id="resTotalRows" class="text-2xl font-extrabold text-slate-900 mt-1">0</p>
+                    </div>
+                    <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-center">
+                        <p class="text-xs text-emerald-700 font-semibold">✅ Inserted New</p>
+                        <p id="resInserted" class="text-2xl font-extrabold text-emerald-950 mt-1">0</p>
+                    </div>
+                    <div class="p-4 rounded-xl bg-blue-50 border border-blue-200 text-center">
+                        <p class="text-xs text-blue-700 font-semibold">🔄 Updated Existing</p>
+                        <p id="resUpdated" class="text-2xl font-extrabold text-blue-950 mt-1">0</p>
+                    </div>
+                    <div class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-center">
+                        <p class="text-xs text-rose-700 font-semibold">⚠️ Skipped / Errors</p>
+                        <p id="resSkipped" class="text-2xl font-extrabold text-rose-950 mt-1">0</p>
+                    </div>
+                </div>
+
+                <!-- Error list if any -->
+                <div id="importErrorsContainer" class="hidden p-4 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-900 space-y-2">
+                    <p class="font-bold">Row-level issues detected during import:</p>
+                    <ul id="importErrorsList" class="list-disc pl-5 space-y-1"></ul>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- TAB 3: MEMBER RECORDS MANAGER (CRUD)      -->
+        <!-- ========================================== -->
+        <div id="view-members" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900">Member Directory Records</h2>
+                        <p class="text-xs text-slate-500">Edit or remove records directly from the database</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="openAdminAddMemberModal()" class="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs shadow transition flex items-center gap-1.5 cursor-pointer">
+                            <span>+ Add Single Member</span>
+                        </button>
+                        <button onclick="loadAdminMembers()" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition">
+                            🔄 Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Search & Filters -->
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                    <div class="sm:col-span-2">
+                        <input
+                            type="text"
+                            id="adminSearchInput"
+                            oninput="filterAdminMembersDebounce()"
+                            placeholder="Search by Name, Father/Husband, Phone, Mohalla, Gotra..."
+                            class="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs focus:border-blue-600 focus:ring-1 focus:ring-blue-100 outline-none"
+                        />
+                    </div>
+                    <div>
+                        <select id="adminFilterGender" onchange="filterAdminMembers()" class="w-full py-2 px-3 rounded-xl border border-slate-300 text-xs bg-white">
+                            <option value="">All Genders (सभी लिंग)</option>
+                            <option value="Male">Male (पुरुष)</option>
+                            <option value="Female">Female (महिला)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select id="adminFilterFamily" onchange="filterAdminMembers()" class="w-full py-2 px-3 rounded-xl border border-slate-300 text-xs bg-white">
+                            <option value="">All Families</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Members Table -->
+                <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                    <table class="w-full text-left text-xs text-slate-600">
+                        <thead class="bg-slate-50 text-slate-700 font-bold uppercase tracking-wider border-b border-slate-200">
+                            <tr>
+                                <th class="p-3">Code</th>
+                                <th class="p-3">Name</th>
+                                <th class="p-3">Hindi Name</th>
+                                <th class="p-3">Family ID</th>
+                                <th class="p-3">Relation</th>
+                                <th class="p-3">Age / Gender</th>
+                                <th class="p-3">Primary Phone</th>
+                                <th class="p-3">Mohalla</th>
+                                <th class="p-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminMembersTableBody" class="divide-y divide-slate-100 font-medium">
+                            <tr>
+                                <td colspan="9" class="p-6 text-center text-slate-400">Loading directory records...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex items-center justify-between text-xs text-slate-500 pt-2">
+                    <span id="adminRecordCountText">Showing 0 records</span>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- TAB 4: SECURITY & SYSTEM SETTINGS          -->
+        <!-- ========================================== -->
+        <div id="view-security" class="hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- Change Admin Password Form -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+                    <div class="flex items-center gap-2 pb-3 border-b border-slate-100">
+                        <span class="text-xl">🔐</span>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900">Change Admin Password</h3>
+                            <p class="text-xs text-slate-500">Update your administrator login password</p>
+                        </div>
+                    </div>
+
+                    <form onsubmit="handleChangePassword(event)" class="space-y-3.5">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Current Password (वर्तमान पासवर्ड)</label>
+                            <input
+                                type="password"
+                                id="oldPasswordInput"
+                                required
+                                placeholder="Enter current password"
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:border-blue-600 focus:ring-1 focus:ring-blue-100 outline-none"
+                            />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">New Password (नया पासवर्ड)</label>
+                            <input
+                                type="password"
+                                id="newPasswordInput"
+                                required
+                                minlength="4"
+                                placeholder="At least 4 characters"
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:border-blue-600 focus:ring-1 focus:ring-blue-100 outline-none"
+                            />
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Confirm New Password (पुष्टि करें)</label>
+                            <input
+                                type="password"
+                                id="confirmPasswordInput"
+                                required
+                                minlength="4"
+                                placeholder="Re-type new password"
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs focus:border-blue-600 focus:ring-1 focus:ring-blue-100 outline-none"
+                            />
+                        </div>
+
+                        <button
+                            type="submit"
+                            id="btnSavePassword"
+                            class="w-full mt-2 py-2.5 px-4 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-bold text-xs shadow transition cursor-pointer"
+                        >
+                            Save New Password
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Admin Account & Session Information -->
+                <div class="space-y-6">
+                    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-3">
+                        <div class="flex items-center gap-2 pb-3 border-b border-slate-100">
+                            <span class="text-xl">👤</span>
+                            <div>
+                                <h3 class="text-base font-bold text-slate-900">Active Admin Session</h3>
+                                <p class="text-xs text-slate-500">Security parameters of current login</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2 text-xs text-slate-600">
+                            <div class="flex justify-between py-1 border-b border-slate-100">
+                                <span class="font-semibold text-slate-500">Username:</span>
+                                <span id="secUsername" class="font-bold text-slate-800">admin</span>
+                            </div>
+                            <div class="flex justify-between py-1 border-b border-slate-100">
+                                <span class="font-semibold text-slate-500">Role:</span>
+                                <span class="font-bold text-blue-700">Chief Jamaat Census Administrator</span>
+                            </div>
+                            <div class="flex justify-between py-1 border-b border-slate-100">
+                                <span class="font-semibold text-slate-500">Auth Method:</span>
+                                <span class="font-bold text-slate-800">Password (Werkzeug Scrypt Hash)</span>
+                            </div>
+                            <div class="flex justify-between py-1">
+                                <span class="font-semibold text-slate-500">Last Login:</span>
+                                <span id="secLastLogin" class="font-mono text-slate-700">Just now</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Maintenance & Reset Tools -->
+                    <div class="bg-white rounded-2xl border border-rose-200 p-6 shadow-sm space-y-3">
+                        <div class="flex items-center gap-2 pb-2 border-b border-rose-100">
+                            <span class="text-xl">⚠️</span>
+                            <div>
+                                <h3 class="text-base font-bold text-rose-950">Database Maintenance</h3>
+                                <p class="text-xs text-rose-600">Tools for database reset or test data refresh</p>
+                            </div>
+                        </div>
+
+                        <p class="text-xs text-slate-600">
+                            Use these options carefully when you want to restore the portal to its clean state or wipe test records.
+                        </p>
+
+                        <div class="flex flex-col sm:flex-row items-center gap-2 pt-2">
+                            <button
+                                onclick="handleResetSampleData()"
+                                class="w-full sm:w-auto px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition border border-slate-300"
+                            >
+                                🔄 Reset to Sample Data
+                            </button>
+                            <button
+                                onclick="handleClearAllData()"
+                                class="w-full sm:w-auto px-4 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold transition border border-rose-300"
+                            >
+                                🗑️ Clear All Member Records
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- EDIT / ADD MEMBER MODAL -->
+    <div id="memberModal" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 p-6 space-y-5">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div>
+                    <h3 id="modalTitle" class="text-lg font-extrabold text-slate-900">Edit Member Record</h3>
+                    <p class="text-xs text-slate-500">Chheepa Samaj Census Database</p>
+                </div>
+                <button onclick="closeMemberModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center text-sm font-bold">
+                    ✕
+                </button>
+            </div>
+
+            <form id="memberForm" onsubmit="saveMemberForm(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="formMemberId" value="" />
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Full Name (English) *</label>
+                        <input type="text" id="formFullName" required class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none" />
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Full Name (Hindi / Devanagari)</label>
+                        <input type="text" id="formFullNameHi" placeholder="उदा. हाजी फारूक छीपा" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none" />
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Family ID (परिवार आईडी) *</label>
+                        <input type="text" id="formFamilyId" required placeholder="FAM-KF-101" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none" />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Relation to Head</label>
+                        <input type="text" id="formRelation" placeholder="Self / Wife / Son" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none" />
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Is Head of Family?</label>
+                        <select id="formIsHead" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white outline-none">
+                            <option value="0">No (नहीं)</option>
+                            <option value="1">Yes (हाँ - परिवार मुखिया)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Gender (लिंग)</label>
+                        <select id="formGender" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white outline-none">
+                            <option value="Male">Male (पुरुष)</option>
+                            <option value="Female">Female (महिला)</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Date of Birth (DOB)</label>
+                        <input type="date" id="formDob" onchange="calculateFormAge()" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none" />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Age (उम्र)</label>
+                        <input type="number" id="formAge" min="0" max="120" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none" />
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Blood Group</label>
+                        <select id="formBlood" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white outline-none">
+                            <option value="">Unknown</option>
+                            <option value="A+">A+</option><option value="A-">A-</option>
+                            <option value="B+">B+</option><option value="B-">B-</option>
+                            <option value="O+">O+</option><option value="O-">O-</option>
+                            <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Marital Status</label>
+                        <select id="formMarital" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white outline-none">
+                            <option value="Single">Single (अविवाहित)</option>
+                            <option value="Married">Married (विवाहित)</option>
+                            <option value="Engaged">Engaged (सगाई)</option>
+                            <option value="Widowed">Widowed (विधवा/विधुर)</option>
+                            <option value="Divorced">Divorced</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Gotra / Sub-caste</label>
+                        <input type="text" id="formGotra" placeholder="उदा. Solanki, Chauhan" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none" />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Father's Name</label>
+                        <input type="text" id="formFather" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none" />
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Mother's Name</label>
+                        <input type="text" id="formMother" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none" />
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Spouse Name</label>
+                        <input type="text" id="formSpouse" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none" />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Primary Phone / Mobile</label>
+                        <input type="tel" id="formPhone" placeholder="10-digit Mobile" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none" />
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">WhatsApp Number</label>
+                        <input type="tel" id="formWhatsapp" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none" />
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Email</label>
+                        <input type="email" id="formEmail" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none" />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Mohalla / Area (मोहल्ला)</label>
+                        <input type="text" id="formMohalla" placeholder="उदा. Khanda Falsa Chowk" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none" />
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="block font-bold text-slate-700 mb-1">Current Address (वर्तमान पता)</label>
+                        <input type="text" id="formAddress" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none" />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Education Level</label>
+                        <input type="text" id="formEducation" placeholder="Graduate / 12th / MBBS" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none" />
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Occupation / Profession</label>
+                        <input type="text" id="formOccupation" placeholder="Business / Software Engineer" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none" />
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Special Notes</label>
+                        <input type="text" id="formNotes" placeholder="Additional details" class="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none" />
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closeMemberModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-blue-900 hover:bg-blue-800 text-white font-bold shadow transition cursor-pointer">
+                        Save Member Record
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript for Admin Panel Logic -->
+    <script>
+        let allMembers = [];
+        let selectedFile = null;
+        let previewData = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initAdmin();
+        });
+
+        async function initAdmin() {
+            await checkAdminSession();
+            await loadOverviewData();
+            await loadAdminMembers();
+        }
+
+        async function checkAdminSession() {
+            try {
+                const res = await fetch('/admin/api/session');
+                const data = await res.json();
+                if (!data.logged_in) {
+                    window.location.href = '/admin/login';
+                    return;
+                }
+                document.getElementById('currentAdminName').textContent = data.username || 'admin';
+                document.getElementById('secUsername').textContent = data.username || 'admin';
+                document.getElementById('secLastLogin').textContent = data.last_login || 'Active Session';
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function handleLogout() {
+            try {
+                await fetch('/admin/api/logout', { method: 'POST' });
+                window.location.href = '/admin/login';
+            } catch (e) {
+                window.location.href = '/admin/login';
+            }
+        }
+
+        function switchAdminTab(tabName) {
+            ['overview', 'upload', 'members', 'security'].forEach(t => {
+                const view = document.getElementById(`view-${t}`);
+                const btn = document.getElementById(`tabBtn-${t}`);
+                if (t === tabName) {
+                    view.classList.remove('hidden');
+                    btn.className = 'px-4 py-2 rounded-xl font-bold text-xs sm:text-sm transition flex items-center gap-2 bg-white text-blue-950 shadow';
+                } else {
+                    view.classList.add('hidden');
+                    btn.className = 'px-4 py-2 rounded-xl font-bold text-xs sm:text-sm transition flex items-center gap-2 bg-blue-900/60 hover:bg-blue-800 text-white border border-blue-700';
+                }
+            });
+            if (tabName === 'members') loadAdminMembers();
+            if (tabName === 'overview') loadOverviewData();
+        }
+
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toastAlert');
+            const inner = document.getElementById('toastInner');
+            const icon = document.getElementById('toastIcon');
+            const text = document.getElementById('toastText');
+            
+            text.textContent = msg;
+            icon.textContent = isError ? '⚠️' : '✅';
+            if (isError) {
+                inner.className = 'p-4 rounded-2xl border font-medium flex items-center justify-between shadow-sm bg-rose-50 border-rose-200 text-rose-900';
+            } else {
+                inner.className = 'p-4 rounded-2xl border font-medium flex items-center justify-between shadow-sm bg-emerald-50 border-emerald-200 text-emerald-900';
+            }
+            toast.classList.remove('hidden');
+            setTimeout(() => { dismissToast(); }, 6000);
+        }
+
+        function dismissToast() {
+            document.getElementById('toastAlert').classList.add('hidden');
+        }
+
+        async function loadOverviewData() {
+            try {
+                const res = await fetch('/api/stats');
+                const data = await res.json();
+                
+                document.getElementById('kpiTotalMembers').textContent = data.total_members || 0;
+                document.getElementById('kpiTotalFamilies').textContent = data.total_families || 0;
+                const m = (data.gender_counts && data.gender_counts['Male']) || 0;
+                const f = (data.gender_counts && data.gender_counts['Female']) || 0;
+                document.getElementById('kpiGenderRatio').textContent = `${m} / ${f}`;
+
+                // Populate recent records in overview table
+                const membersRes = await fetch('/api/members');
+                const membersData = await membersRes.json();
+                const members = membersData.members || [];
+                const tbody = document.getElementById('overviewRecentTableBody');
+                
+                if (members.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">No member records found.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = members.slice(0, 8).map(m => `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-3 font-mono font-bold text-blue-700">${m.member_code || '—'}</td>
+                        <td class="p-3">
+                            <span class="font-bold text-slate-900">${m.full_name}</span>
+                            ${m.full_name_hi ? `<span class="block text-[11px] text-slate-500">${m.full_name_hi}</span>` : ''}
+                        </td>
+                        <td class="p-3 font-mono text-slate-600">${m.family_id}</td>
+                        <td class="p-3">
+                            <span class="px-2 py-0.5 rounded ${m.is_head ? 'bg-amber-100 text-amber-900 font-bold' : 'bg-slate-100 text-slate-700'}">
+                                ${m.relation_to_head || 'Member'}
+                            </span>
+                        </td>
+                        <td class="p-3">${m.age || '—'} Yrs • ${m.gender || '—'}</td>
+                        <td class="p-3 font-mono">${m.phone_primary || '—'}</td>
+                        <td class="p-3">${m.mohalla_area || '—'}</td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // ==========================================
+        // FILE DRAG & DROP & UPLOAD LOGIC
+        // ==========================================
+        function handleDragOver(e) {
+            e.preventDefault();
+            document.getElementById('dropZone').classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            document.getElementById('dropZone').classList.remove('dragover');
+        }
+
+        function handleFileDrop(e) {
+            e.preventDefault();
+            document.getElementById('dropZone').classList.remove('dragover');
+            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                processChosenFile(e.dataTransfer.files[0]);
+            }
+        }
+
+        function handleFileSelect(e) {
+            if (e.target.files && e.target.files[0]) {
+                processChosenFile(e.target.files[0]);
+            }
+        }
+
+        function processChosenFile(file) {
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (!['csv', 'xlsx', 'xls', 'json'].includes(ext)) {
+                showToast('Unsupported file type. Please upload a .csv, .xlsx, .xls, or .json file.', true);
+                return;
+            }
+
+            selectedFile = file;
+            document.getElementById('selectedFileName').textContent = file.name;
+            document.getElementById('selectedFileSize').textContent = `${(file.size / 1024).toFixed(1)} KB • Format: .${ext.toUpperCase()}`;
+            
+            const badge = document.getElementById('fileTypeBadge');
+            if (ext === 'csv') {
+                badge.className = 'w-10 h-10 rounded-xl bg-blue-600 text-white font-extrabold flex items-center justify-center text-xs shrink-0';
+                badge.textContent = 'CSV';
+            } else if (['xlsx', 'xls'].includes(ext)) {
+                badge.className = 'w-10 h-10 rounded-xl bg-emerald-600 text-white font-extrabold flex items-center justify-center text-xs shrink-0';
+                badge.textContent = 'XLSX';
+            } else {
+                badge.className = 'w-10 h-10 rounded-xl bg-purple-600 text-white font-extrabold flex items-center justify-center text-xs shrink-0';
+                badge.textContent = 'JSON';
+            }
+
+            document.getElementById('selectedFileInfo').classList.remove('hidden');
+            document.getElementById('btnPreviewUpload').disabled = false;
+            document.getElementById('btnCommitUpload').disabled = false;
+            document.getElementById('previewCard').classList.add('hidden');
+            document.getElementById('importResultCard').classList.add('hidden');
+        }
+
+        function clearSelectedFile() {
+            selectedFile = null;
+            document.getElementById('fileUploadInput').value = '';
+            document.getElementById('selectedFileInfo').classList.add('hidden');
+            document.getElementById('btnPreviewUpload').disabled = true;
+            document.getElementById('btnCommitUpload').disabled = true;
+            document.getElementById('previewCard').classList.add('hidden');
+        }
+
+        // Preview Endpoint Call
+        async function previewUploadedFile() {
+            if (!selectedFile) return;
+
+            const btn = document.getElementById('btnPreviewUpload');
+            btn.disabled = true;
+            btn.innerHTML = `<span>⏳ Parsing file in memory...</span>`;
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            try {
+                const res = await fetch('/admin/api/upload-preview', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    renderPreviewCard(data);
+                } else {
+                    showToast(data.error || 'Failed to parse file for preview.', true);
+                }
+            } catch (err) {
+                showToast('Server error while reading preview.', true);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg><span>🔍 Preview Data First (पूर्वावलोकन)</span>`;
+            }
+        }
+
+        function renderPreviewCard(data) {
+            const card = document.getElementById('previewCard');
+            document.getElementById('previewSummaryText').textContent = 
+                `Detected ${data.total_rows} row(s) in "${selectedFile.name}". Showing top ${data.sample_rows.length} records.`;
+
+            // Render mapped columns
+            const chips = document.getElementById('previewColumnChips');
+            chips.innerHTML = (data.mapped_fields || []).map(f => `
+                <span class="px-2 py-0.5 rounded-lg bg-blue-100 text-blue-900 font-mono text-[11px] font-semibold">
+                    ✓ ${f}
+                </span>
+            `).join('');
+
+            // Render sample rows
+            const tbody = document.getElementById('previewTableBody');
+            tbody.innerHTML = data.sample_rows.map((r, idx) => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-2.5 font-bold text-slate-400">#${idx + 1}</td>
+                    <td class="p-2.5 font-bold text-slate-900">${r.full_name || '<span class="text-rose-500 italic">Missing Name</span>'}</td>
+                    <td class="p-2.5 text-slate-600">${r.full_name_hi || '—'}</td>
+                    <td class="p-2.5">${r.relation_to_head || 'Self'} ${r.is_head ? '<span class="text-amber-600 font-bold">(Head)</span>' : ''}</td>
+                    <td class="p-2.5">${r.age || '—'} / ${r.gender || '—'}</td>
+                    <td class="p-2.5 font-mono text-blue-700">${r.family_id || 'Auto-assign'}</td>
+                    <td class="p-2.5 font-mono">${r.phone_primary || '—'}</td>
+                    <td class="p-2.5">${r.mohalla_area || '—'}</td>
+                    <td class="p-2.5">${r.gotra_subcaste || '—'}</td>
+                </tr>
+            `).join('');
+
+            card.classList.remove('hidden');
+            card.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Commit Endpoint Call
+        async function commitUploadedFile() {
+            if (!selectedFile) return;
+
+            const mode = document.querySelector('input[name="importMode"]:checked').value;
+            if (mode === 'replace') {
+                const conf = confirm("⚠️ DANGER: You selected 'Replace All' mode. This will DELETE ALL CURRENT MEMBER RECORDS in the database and replace them with the uploaded file. Are you absolutely certain you want to proceed?");
+                if (!conf) return;
+            }
+
+            const btn = document.getElementById('btnCommitUpload');
+            btn.disabled = true;
+            btn.innerHTML = `<span>⏳ Importing records to SQLite...</span>`;
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('mode', mode);
+
+            try {
+                const res = await fetch('/admin/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    showToast(data.message || 'Data successfully imported!');
+                    renderImportResult(data);
+                    await loadOverviewData();
+                    await loadAdminMembers();
+                } else {
+                    showToast(data.error || 'Import failed. Please check error logs.', true);
+                }
+            } catch (err) {
+                showToast('Network error while importing file.', true);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg><span>🚀 Commit & Import into Database</span>`;
+            }
+        }
+
+        function renderImportResult(data) {
+            const card = document.getElementById('importResultCard');
+            document.getElementById('resTotalRows').textContent = data.total_rows || 0;
+            document.getElementById('resInserted').textContent = data.inserted || 0;
+            document.getElementById('resUpdated').textContent = data.updated || 0;
+            document.getElementById('resSkipped').textContent = data.skipped || 0;
+
+            const errContainer = document.getElementById('importErrorsContainer');
+            const errList = document.getElementById('importErrorsList');
+            if (data.errors && data.errors.length > 0) {
+                errList.innerHTML = data.errors.map(e => `
+                    <li><strong>Row ${e.row}:</strong> ${e.reason}</li>
+                `).join('');
+                errContainer.classList.remove('hidden');
+            } else {
+                errContainer.classList.add('hidden');
+            }
+
+            card.classList.remove('hidden');
+            card.scrollIntoView({ behavior: 'smooth' });
+        }
+
+
+        // ==========================================
+        // MEMBERS CRUD & MANAGER
+        // ==========================================
+        async function loadAdminMembers() {
+            try {
+                const res = await fetch('/api/members');
+                const data = await res.json();
+                allMembers = data.members || [];
+                renderAdminMembersTable(allMembers);
+                populateAdminFamilyFilter();
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function populateAdminFamilyFilter() {
+            const select = document.getElementById('adminFilterFamily');
+            const fams = [...new Set(allMembers.map(m => m.family_id).filter(Boolean))].sort();
+            select.innerHTML = '<option value="">All Families (सभी परिवार)</option>' +
+                fams.map(f => `<option value="${f}">${f}</option>`).join('');
+        }
+
+        let searchDebounceTimer = null;
+        function filterAdminMembersDebounce() {
+            clearTimeout(searchDebounceTimer);
+            searchDebounceTimer = setTimeout(filterAdminMembers, 250);
+        }
+
+        function filterAdminMembers() {
+            const query = (document.getElementById('adminSearchInput').value || '').toLowerCase().trim();
+            const gender = document.getElementById('adminFilterGender').value;
+            const family = document.getElementById('adminFilterFamily').value;
+
+            let filtered = allMembers.filter(m => {
+                if (gender && m.gender !== gender) return false;
+                if (family && m.family_id !== family) return false;
+                if (query) {
+                    const text = `${m.full_name || ''} ${m.full_name_hi || ''} ${m.member_code || ''} ${m.family_id || ''} ${m.father_name || ''} ${m.spouse_name || ''} ${m.phone_primary || ''} ${m.mohalla_area || ''} ${m.gotra_subcaste || ''}`.toLowerCase();
+                    if (!text.includes(query)) return false;
+                }
+                return true;
+            });
+            renderAdminMembersTable(filtered);
+        }
+
+        function renderAdminMembersTable(members) {
+            const tbody = document.getElementById('adminMembersTableBody');
+            document.getElementById('adminRecordCountText').textContent = `Showing ${members.length} of ${allMembers.length} records`;
+
+            if (members.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-400">No member records match current filter.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = members.map(m => `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="p-3 font-mono font-bold text-blue-700">${m.member_code || '—'}</td>
+                    <td class="p-3 font-bold text-slate-900">${m.full_name}</td>
+                    <td class="p-3 text-slate-600">${m.full_name_hi || '—'}</td>
+                    <td class="p-3 font-mono text-slate-700">${m.family_id}</td>
+                    <td class="p-3">
+                        <span class="px-2 py-0.5 rounded text-[11px] ${m.is_head ? 'bg-amber-100 text-amber-900 font-bold' : 'bg-slate-100 text-slate-700'}">
+                            ${m.relation_to_head || 'Member'}
+                        </span>
+                    </td>
+                    <td class="p-3">${m.age || '—'} Yrs • ${m.gender || '—'}</td>
+                    <td class="p-3 font-mono">${m.phone_primary || '—'}</td>
+                    <td class="p-3">${m.mohalla_area || '—'}</td>
+                    <td class="p-3 text-right whitespace-nowrap">
+                        <button onclick="editMember(${m.id})" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-[11px] mr-1.5 transition">
+                            ✏️ Edit
+                        </button>
+                        <button onclick="deleteMember(${m.id}, '${m.full_name.replace(/'/g, "\\'")}')" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-[11px] transition">
+                            🗑️ Delete
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openAdminAddMemberModal() {
+            document.getElementById('modalTitle').textContent = 'Add New Samaj Member (नया सदस्य जोड़ें)';
+            document.getElementById('formMemberId').value = '';
+            document.getElementById('memberForm').reset();
+            document.getElementById('formIsHead').value = '0';
+            document.getElementById('memberModal').classList.remove('hidden');
+        }
+
+        async function editMember(id) {
+            try {
+                const res = await fetch(`/api/members/${id}`);
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error);
+                
+                const m = data.member;
+                document.getElementById('modalTitle').textContent = `Edit Member: ${m.full_name} (${m.member_code})`;
+                document.getElementById('formMemberId').value = m.id;
+                document.getElementById('formFullName').value = m.full_name || '';
+                document.getElementById('formFullNameHi').value = m.full_name_hi || '';
+                document.getElementById('formFamilyId').value = m.family_id || '';
+                document.getElementById('formRelation').value = m.relation_to_head || '';
+                document.getElementById('formIsHead').value = m.is_head ? '1' : '0';
+                document.getElementById('formGender').value = m.gender || 'Male';
+                document.getElementById('formDob').value = m.dob || '';
+                document.getElementById('formAge').value = m.age || '';
+                document.getElementById('formBlood').value = m.blood_group || '';
+                document.getElementById('formMarital').value = m.marital_status || 'Single';
+                document.getElementById('formGotra').value = m.gotra_subcaste || '';
+                document.getElementById('formFather').value = m.father_name || '';
+                document.getElementById('formMother').value = m.mother_name || '';
+                document.getElementById('formSpouse').value = m.spouse_name || '';
+                document.getElementById('formPhone').value = m.phone_primary || '';
+                document.getElementById('formWhatsapp').value = m.phone_whatsapp || '';
+                document.getElementById('formEmail').value = m.email || '';
+                document.getElementById('formMohalla').value = m.mohalla_area || '';
+                document.getElementById('formAddress').value = m.current_address || '';
+                document.getElementById('formEducation').value = m.education_level || '';
+                document.getElementById('formOccupation').value = m.occupation_title || '';
+                document.getElementById('formNotes').value = m.special_notes || '';
+
+                document.getElementById('memberModal').classList.remove('hidden');
+            } catch (err) {
+                showToast('Failed to load member details.', true);
+            }
+        }
+
+        function closeMemberModal() {
+            document.getElementById('memberModal').classList.add('hidden');
+        }
+
+        function calculateFormAge() {
+            const dob = document.getElementById('formDob').value;
+            if (!dob) return;
+            const bDate = new Date(dob);
+            const today = new Date();
+            let age = today.getFullYear() - bDate.getFullYear();
+            const m = today.getMonth() - bDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < bDate.getDate())) {
+                age--;
+            }
+            if (age >= 0) document.getElementById('formAge').value = age;
+        }
+
+        async function saveMemberForm(e) {
+            e.preventDefault();
+            const memberId = document.getElementById('formMemberId').value;
+            const isEdit = Boolean(memberId);
+
+            const payload = {
+                full_name: document.getElementById('formFullName').value.trim(),
+                full_name_hi: document.getElementById('formFullNameHi').value.trim(),
+                family_id: document.getElementById('formFamilyId').value.trim(),
+                relation_to_head: document.getElementById('formRelation').value.trim(),
+                is_head: document.getElementById('formIsHead').value === '1',
+                gender: document.getElementById('formGender').value,
+                dob: document.getElementById('formDob').value,
+                age: document.getElementById('formAge').value,
+                blood_group: document.getElementById('formBlood').value,
+                marital_status: document.getElementById('formMarital').value,
+                gotra_subcaste: document.getElementById('formGotra').value.trim(),
+                father_name: document.getElementById('formFather').value.trim(),
+                mother_name: document.getElementById('formMother').value.trim(),
+                spouse_name: document.getElementById('formSpouse').value.trim(),
+                phone_primary: document.getElementById('formPhone').value.trim(),
+                phone_whatsapp: document.getElementById('formWhatsapp').value.trim(),
+                email: document.getElementById('formEmail').value.trim(),
+                mohalla_area: document.getElementById('formMohalla').value.trim(),
+                current_address: document.getElementById('formAddress').value.trim(),
+                education_level: document.getElementById('formEducation').value.trim(),
+                occupation_title: document.getElementById('formOccupation').value.trim(),
+                special_notes: document.getElementById('formNotes').value.trim()
+            };
+
+            const url = isEdit ? `/api/members/${memberId}` : `/api/members`;
+            const method = isEdit ? 'PUT' : 'POST';
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+                if (res.ok) {
+                    showToast(result.message || 'Member saved successfully!');
+                    closeMemberModal();
+                    await loadAdminMembers();
+                    await loadOverviewData();
+                } else {
+                    showToast(result.error || 'Failed to save member', true);
+                }
+            } catch (err) {
+                showToast('Network error while saving member.', true);
+            }
+        }
+
+        async function deleteMember(id, name) {
+            const conf = confirm(`Are you sure you want to permanently delete "${name}" from the Samaj Directory?`);
+            if (!conf) return;
+
+            try {
+                const res = await fetch(`/api/members/${id}`, { method: 'DELETE' });
+                const result = await res.json();
+                if (res.ok) {
+                    showToast(result.message || 'Record deleted successfully.');
+                    await loadAdminMembers();
+                    await loadOverviewData();
+                } else {
+                    showToast(result.error || 'Failed to delete record.', true);
+                }
+            } catch (e) {
+                showToast('Server error while deleting.', true);
+            }
+        }
+
+
+        // ==========================================
+        // SECURITY & SETTINGS
+        // ==========================================
+        async function handleChangePassword(e) {
+            e.preventDefault();
+            const oldPassword = document.getElementById('oldPasswordInput').value;
+            const newPassword = document.getElementById('newPasswordInput').value;
+            const confirmPassword = document.getElementById('confirmPasswordInput').value;
+
+            if (newPassword !== confirmPassword) {
+                showToast('New passwords do not match.', true);
+                return;
+            }
+
+            const btn = document.getElementById('btnSavePassword');
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/admin/api/change-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ old_password: oldPassword, new_password: newPassword })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    showToast('Admin password changed successfully!');
+                    document.getElementById('oldPasswordInput').value = '';
+                    document.getElementById('newPasswordInput').value = '';
+                    document.getElementById('confirmPasswordInput').value = '';
+                } else {
+                    showToast(data.error || 'Failed to change password.', true);
+                }
+            } catch (err) {
+                showToast('Server error while updating password.', true);
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        async function handleResetSampleData() {
+            const conf = confirm("Reset database to the initial 6 sample records of Khanda Falsa, Jodhpur? Any added members will be replaced.");
+            if (!conf) return;
+
+            try {
+                const res = await fetch('/admin/api/reset-data', { method: 'POST' });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast('Database reset to sample records successfully.');
+                    await loadOverviewData();
+                    await loadAdminMembers();
+                } else {
+                    showToast(data.error || 'Reset failed.', true);
+                }
+            } catch (e) {
+                showToast('Network error during reset.', true);
+            }
+        }
+
+        async function handleClearAllData() {
+            const conf = prompt("DANGER: Type 'DELETE ALL' to confirm wiping all member records from the database:");
+            if (conf !== 'DELETE ALL') {
+                if (conf !== null) alert("Confirmation phrase mismatch. Action cancelled.");
+                return;
+            }
+
+            try {
+                const res = await fetch('/admin/api/clear-data', { method: 'POST' });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast('All member records cleared from database.');
+                    await loadOverviewData();
+                    await loadAdminMembers();
+                } else {
+                    showToast(data.error || 'Clear failed.', true);
+                }
+            } catch (e) {
+                showToast('Network error during clear.', true);
+            }
+        }
+    </script>
+</body>
+</html>
