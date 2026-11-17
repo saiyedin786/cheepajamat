@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chheepa Samaj Khanda Falsa, Jodhpur — Standalone Portal (No Server Needed)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', 'Noto Sans Devanagari', sans-serif;
+            background-color: #f8fafc;
+        }
+        .jodhpur-gradient {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 55%, #1d4ed8 100%);
+        }
+        .block-pattern {
+            background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 16px 16px;
+        }
+        @media print {
+            body * { visibility: hidden; }
+            #printableCardArea, #printableCardArea * { visibility: visible; }
+            #printableCardArea {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                box-shadow: none !important;
+                border: 1px solid #cbd5e1;
+            }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Top Heritage Banner & Navigation -->
+    <header class="jodhpur-gradient text-white shadow-lg relative overflow-hidden no-print">
+        <div class="block-pattern absolute inset-0 pointer-events-none"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 relative z-10">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="px-3.5 py-2 rounded-2xl bg-amber-500/20 border-2 border-amber-400 flex flex-col items-center justify-center text-amber-300 font-extrabold leading-tight shadow-inner shrink-0">
+                        <span class="text-base sm:text-lg tracking-wide">छीपा</span>
+                        <span class="text-xs sm:text-sm text-amber-200">जमात</span>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider bg-amber-400/20 text-amber-300 rounded-full border border-amber-400/30">
+                                Official Jamaat Portal • जोधपुर
+                            </span>
+                            <span class="text-xs text-blue-200 hidden sm:inline">Instant Browser Edition (Auto-Saved Locally)</span>
+                        </div>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-0.5">
+                            Chheepa Samaj Khanda Falsa, Jodhpur
+                        </h1>
+                        <p class="text-blue-200 text-sm">
+                            छीपा समाज जामात खांडा फलसा, जोधपुर — जनगणना एवं परिवार निर्देशिका (Family & Member Census Directory)
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <button onclick="switchTab('directory')" id="tabBtn-directory" class="px-4 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 bg-white text-blue-950 shadow">
+                        🔍 Search & Directory
+                    </button>
+                    <button onclick="openNewMemberForm()" id="tabBtn-form" class="px-4 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 bg-amber-400 hover:bg-amber-300 text-slate-950 shadow">
+                        + Add Person / Member
+                    </button>
+                    <button onclick="switchTab('families')" id="tabBtn-families" class="px-4 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 bg-blue-900/60 hover:bg-blue-800 text-white border border-blue-700">
+                        🏠 Families (घर / परिवार)
+                    </button>
+                    <button onclick="switchTab('analytics')" id="tabBtn-analytics" class="px-4 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 bg-blue-900/60 hover:bg-blue-800 text-white border border-blue-700">
+                        📊 Samaj Analytics
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Quick Summary KPI Strip -->
+    <section class="bg-white border-b border-slate-200 shadow-xs no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                <div class="p-3 rounded-xl bg-blue-50/70 border border-blue-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-blue-700">Total Persons (कुल सदस्य)</p>
+                        <p id="statTotalMembers" class="text-2xl font-extrabold text-blue-950">0</p>
+                    </div>
+                    <span class="w-9 h-9 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-sm">👥</span>
+                </div>
+                <div class="p-3 rounded-xl bg-amber-50/70 border border-amber-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-amber-800">Families (कुल परिवार)</p>
+                        <p id="statTotalFamilies" class="text-2xl font-extrabold text-amber-950">0</p>
+                    </div>
+                    <span class="w-9 h-9 rounded-lg bg-amber-500 text-white flex items-center justify-center font-bold text-sm">🏠</span>
+                </div>
+                <div class="p-3 rounded-xl bg-emerald-50/70 border border-emerald-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-emerald-800">Male / Female (पुरुष/महिला)</p>
+                        <p id="statGenderSplit" class="text-lg font-extrabold text-emerald-950">0 / 0</p>
+                    </div>
+                    <span class="w-9 h-9 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-sm">⚖️</span>
+                </div>
+                <div class="p-3 rounded-xl bg-purple-50/70 border border-purple-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-purple-800">Youth 18–35 (युवा)</p>
+                        <p id="statYouthCount" class="text-2xl font-extrabold text-purple-950">0</p>
+                    </div>
+                    <span class="w-9 h-9 rounded-lg bg-purple-600 text-white flex items-center justify-center font-bold text-sm">🎓</span>
+                </div>
+                <div class="p-3 rounded-xl bg-rose-50/70 border border-rose-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-rose-800">Married (विवाहित)</p>
+                        <p id="statMarriedCount" class="text-2xl font-extrabold text-rose-950">0</p>
+                    </div>
+                    <span class="w-9 h-9 rounded-lg bg-rose-600 text-white flex items-center justify-center font-bold text-sm">💍</span>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-100 border border-slate-200 flex flex-col justify-center gap-1">
+                    <div class="flex items-center justify-between gap-1">
+                        <button onclick="exportCsvLocal()" class="flex-1 text-center py-1 px-2 rounded bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold transition">
+                            ⬇ Excel/CSV
+                        </button>
+                        <button onclick="exportJsonLocal()" class="flex-1 text-center py-1 px-2 rounded bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold transition">
+                            ⬇ Backup
+                        </button>
+                    </div>
+                    <label class="cursor-pointer text-center py-1 px-2 rounded bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 text-xs font-semibold transition">
+                        ⬆ Restore JSON
+                        <input type="file" accept=".json" class="hidden" onchange="importJsonLocal(event)" />
+                    </label>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full no-print">
+        <div id="toastBanner" class="hidden mb-4 p-4 rounded-xl border font-medium flex items-center justify-between shadow-sm">
+            <span id="toastMessage"></span>
+            <button onclick="document.getElementById('toastBanner').classList.add('hidden')" class="text-sm underline ml-4">Dismiss</button>
+        </div>
+
+        <!-- TAB 1: DIRECTORY -->
+        <div id="view-directory" class="space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 pb-4 border-b border-slate-100">
+                    <h2 class="text-lg font-bold text-slate-900">
+                        🔍 Search Chheepa Samaj Directory <span class="text-xs font-normal text-slate-500">(नाम, पिता/पति का नाम, गोत्र, मोहल्ला, मोबाइल, शिक्षा या व्यवसाय से खोजें)</span>
+                    </h2>
+                    <div class="flex items-center gap-3">
+                        <label class="inline-flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer">
+                            <input type="checkbox" id="filterOnlyHeads" onchange="applyFilters()" class="rounded text-blue-600 w-4 h-4" />
+                            <span>Only Head of Family (केवल परिवार मुखिया)</span>
+                        </label>
+                        <button onclick="resetFilters()" class="text-xs font-semibold text-blue-700 hover:text-blue-900 underline">Reset Filters</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3 mt-4">
+                    <div class="md:col-span-5 relative">
+                        <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Search by Name, Father/Mother/Husband/Wife, Mobile, Gotra, Address..." class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-300 focus:border-blue-600 text-sm outline-none" />
+                        <span class="absolute left-3 top-2.5 text-slate-400">🔍</span>
+                    </div>
+                    <div class="md:col-span-2">
+                        <select id="filterFamily" onchange="applyFilters()" class="w-full py-2.5 px-3 rounded-xl border border-slate-300 text-sm bg-white">
+                            <option value="">All Families (सभी परिवार)</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <select id="filterMarital" onchange="applyFilters()" class="w-full py-2.5 px-3 rounded-xl border border-slate-300 text-sm bg-white">
+                            <option value="">Marital Status (वैवाहिक स्थिति)</option>
+                            <option value="Single">Single / Unmarried (अविवाहित)</option>
+                            <option value="Married">Married (विवाहित)</option>
+                            <option value="Engaged">Engaged (सगाई)</option>
+                            <option value="Widowed">Widowed (विधवा / विधुर)</option>
+                            <option value="Divorced">Divorced / Separated</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-3">
+                        <select id="filterEducation" onchange="applyFilters()" class="w-full py-2.5 px-3 rounded-xl border border-slate-300 text-sm bg-white">
+                            <option value="">All Education (सभी शिक्षा स्तर)</option>
+                            <option value="Primary / Middle">Primary / Middle (8th तक)</option>
+                            <option value="Secondary (10th)">Secondary (10th)</option>
+                            <option value="Higher Secondary (12th)">Higher Secondary (12th)</option>
+                            <option value="ANM (Nursing)">ANM (Nursing / नर्सिंग)</option>
+                            <option value="GNM (Nursing)">GNM (General Nursing & Midwifery)</option>
+                            <option value="B.Sc Nursing">B.Sc Nursing (बी.एससी नर्सिंग)</option>
+                            <option value="Diploma / ITI">Diploma / ITI / Polytechnic / D.Pharm</option>
+                            <option value="Graduate">Graduate (B.A / B.Com / B.Sc)</option>
+                            <option value="Post-Graduate / Professional">Post-Graduate / B.Tech / MBA / CA / B.Ed</option>
+                            <option value="Doctorate / Medical">Doctorate / Medical (MBBS / BDS / MD / B.Pharm / PhD)</option>
+                            <option value="Islamic / Madarsa / Hifz">Alim / Hafiz / Deeni Taleem</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-6 gap-3 mt-3">
+                    <div>
+                        <select id="filterEmployment" onchange="applyFilters()" class="w-full py-2 px-3 rounded-xl border border-slate-300 text-xs bg-white">
+                            <option value="">Employment (व्यवसाय)</option>
+                            <option value="Business / Self-Employed">Business / Handloom / Textile</option>
+                            <option value="Private Sector Job">Private Sector Job</option>
+                            <option value="Government Job">Government Job</option>
+                            <option value="Professional / Consultant">Doctor / Engineer / CA / Lawyer</option>
+                            <option value="Artisan / Craftworker">Traditional Chheepa Artisan</option>
+                            <option value="Homemaker">Homemaker (गृहिणी)</option>
+                            <option value="Student">Student (विद्यार्थी)</option>
+                            <option value="Retired">Retired</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select id="filterGender" onchange="applyFilters()" class="w-full py-2 px-3 rounded-xl border border-slate-300 text-xs bg-white">
+                            <option value="">Gender (लिंग)</option>
+                            <option value="Male">Male (पुरुष)</option>
+                            <option value="Female">Female (महिला)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select id="filterBlood" onchange="applyFilters()" class="w-full py-2 px-3 rounded-xl border border-slate-300 text-xs bg-white">
+                            <option value="">Blood Group (रक्त समूह)</option>
+                            <option value="A+">A+</option><option value="A-">A-</option>
+                            <option value="B+">B+</option><option value="B-">B-</option>
+                            <option value="O+">O+</option><option value="O-">O-</option>
+                            <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                        </select>
+                    </div>
+                    <div>
+                        <input type="text" id="filterMohalla" oninput="applyFilters()" placeholder="Mohalla (e.g. Khanda Falsa)" class="w-full py-2 px-3 rounded-xl border border-slate-300 text-xs" />
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <input type="number" id="filterMinAge" oninput="applyFilters()" placeholder="Min Age" class="w-1/2 py-2 px-2.5 rounded-xl border border-slate-300 text-xs" />
+                        <span class="text-slate-400">-</span>
+                        <input type="number" id="filterMaxAge" oninput="applyFilters()" placeholder="Max Age" class="w-1/2 py-2 px-2.5 rounded-xl border border-slate-300 text-xs" />
+                    </div>
+                    <div class="flex items-center justify-end">
+                        <span id="resultsCountBadge" class="text-xs font-bold text-blue-900 bg-blue-100 px-3 py-1.5 rounded-lg">Showing 0 records</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="membersGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </div>
+
+        <!-- TAB 2: ADD / EDIT FORM -->
+        <div id="view-form" class="hidden">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="jodhpur-gradient px-6 py-4 text-white flex items-center justify-between">
+                    <div>
+                        <h2 id="formModalTitle" class="text-xl font-bold">Create New Chheepa Samaj Person Record (नया सदस्य पंजीकरण फॉर्म)</h2>
+                        <p class="text-xs text-blue-200 mt-0.5">Chheepa Jamaat Khanda Falsa, Jodhpur — Complete Personal, Family, Parents, Spouse, Education & Employment Form</p>
+                    </div>
+                    <button type="button" onclick="switchTab('directory')" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold">✕ Back</button>
+                </div>
+
+                <form id="memberForm" onsubmit="saveMemberForm(event)" class="p-6 space-y-8">
+                    <input type="hidden" id="f_id" value="" />
+                    <input type="hidden" id="f_photo_data" value="" />
+
+                    <!-- Section 1 -->
+                    <div>
+                        <h3 class="text-sm font-extrabold uppercase tracking-wider text-blue-900 border-b border-slate-200 pb-2 mb-4">
+                            1. Family / Household Identity & Photo (परिवार पहचान एवं फोटो)
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+                            <div class="md:col-span-3 flex flex-col items-center p-4 rounded-xl bg-slate-50 border border-slate-200">
+                                <div id="photoPreviewBox" class="w-24 h-24 rounded-2xl bg-blue-100 border-2 border-blue-300 flex items-center justify-center overflow-hidden text-blue-800 font-bold text-2xl mb-2">👤</div>
+                                <label class="cursor-pointer px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold">
+                                    Upload Photo
+                                    <input type="file" accept="image/*" class="hidden" onchange="handlePhotoUpload(event)" />
+                                </label>
+                                <button type="button" onclick="clearPhoto()" class="text-[11px] text-slate-500 mt-1 underline">Remove</button>
+                            </div>
+                            <div class="md:col-span-9 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Family / Household ID (परिवार आईडी) *</label>
+                                    <div class="flex gap-1.5">
+                                        <input type="text" id="f_family_id" list="existingFamiliesList" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                                        <button type="button" onclick="generateNewFamilyId()" class="px-2.5 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-semibold">New ID</button>
+                                    </div>
+                                    <datalist id="existingFamiliesList"></datalist>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Relation to Head (मुखिया से संबंध)</label>
+                                    <select id="f_relation_to_head" onchange="document.getElementById('f_is_head').checked = (this.value === 'Self (Head)')" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm bg-white">
+                                        <option value="Self (Head)">Self — Head of Family (स्वयं मुखिया)</option>
+                                        <option value="Wife">Wife (पत्नी)</option>
+                                        <option value="Husband">Husband (पति)</option>
+                                        <option value="Son">Son (पुत्र)</option>
+                                        <option value="Daughter">Daughter (पुत्री)</option>
+                                        <option value="Daughter-in-Law">Daughter-in-Law (पुत्रवधू / बहू)</option>
+                                        <option value="Father">Father (पिता)</option>
+                                        <option value="Mother">Mother (माता)</option>
+                                        <option value="Brother">Brother (भाई)</option>
+                                        <option value="Sister">Sister (बहन)</option>
+                                        <option value="Grandson">Grandson (पोता / नवासा)</option>
+                                        <option value="Granddaughter">Granddaughter (पोती / नवासी)</option>
+                                        <option value="Other Relative">Other Relative (अन्य सदस्य)</option>
+                                    </select>
+                                </div>
+                                <div class="flex flex-col justify-center pt-4">
+                                    <label class="inline-flex items-center gap-2 p-2.5 rounded-lg bg-amber-50 border border-amber-200 cursor-pointer">
+                                        <input type="checkbox" id="f_is_head" class="w-4 h-4" />
+                                        <span class="text-xs font-bold text-amber-950">Is Head of Family? (मुखिया)</span>
+                                    </label>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Full Name (पूरा नाम - English) *</label>
+                                    <input type="text" id="f_full_name" required placeholder="Full Name" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Full Name in Hindi (पूरा नाम हिंदी में)</label>
+                                    <input type="text" id="f_full_name_hi" placeholder="हिंदी में नाम" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Gotra / Sub-caste (गोत्र)</label>
+                                    <input type="text" id="f_gotra_subcaste" placeholder="e.g. Solanki, Chauhan, Bhati, Panwar" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 2 -->
+                    <div>
+                        <h3 class="text-sm font-extrabold uppercase tracking-wider text-blue-900 border-b border-slate-200 pb-2 mb-4">
+                            2. Age, Gender & Marital Status (आयु, लिंग एवं वैवाहिक स्थिति)
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-5 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Gender (लिंग)</label>
+                                <select id="f_gender" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm bg-white">
+                                    <option value="Male">Male (पुरुष)</option>
+                                    <option value="Female">Female (महिला)</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Date of Birth (जन्म तिथि)</label>
+                                <input type="date" id="f_dob" onchange="autoComputeAge()" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Age (आयु / उम्र) *</label>
+                                <input type="number" id="f_age" min="0" max="125" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Marital Status (वैवाहिक स्थिति)</label>
+                                <select id="f_marital_status" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm bg-white">
+                                    <option value="Single">Single / Unmarried (अविवाहित)</option>
+                                    <option value="Married">Married (विवाहित)</option>
+                                    <option value="Engaged">Engaged (सगाई)</option>
+                                    <option value="Widowed">Widowed (विधवा / विधुर)</option>
+                                    <option value="Divorced">Divorced / Separated</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Blood Group (रक्त समूह)</label>
+                                <select id="f_blood_group" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm bg-white">
+                                    <option value="">Unknown</option>
+                                    <option value="A+">A+</option><option value="A-">A-</option>
+                                    <option value="B+">B+</option><option value="B-">B-</option>
+                                    <option value="O+">O+</option><option value="O-">O-</option>
+                                    <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3 -->
+                    <div>
+                        <h3 class="text-sm font-extrabold uppercase tracking-wider text-blue-900 border-b border-slate-200 pb-2 mb-4">
+                            3. Mother, Father, Husband/Wife & Family Members (माता-पिता, पति/पत्नी एवं परिवार सदस्य विवरण)
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Father's Name (पिता का नाम)</label>
+                                <input type="text" id="f_father_name" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Mother's Name (माता का नाम)</label>
+                                <input type="text" id="f_mother_name" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Husband / Wife Name (पति या पत्नी का नाम)</label>
+                                <input type="text" id="f_spouse_name" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Total Members in Family (परिवार में कुल सदस्य)</label>
+                                <input type="number" id="f_total_family_members" value="1" min="1" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Number of Children (बच्चों की संख्या)</label>
+                                <input type="number" id="f_children_count" value="0" min="0" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Native Origin (मूल निवास)</label>
+                                <input type="text" id="f_native_origin" value="Khanda Falsa, Jodhpur" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                            </div>
+                            <div class="sm:col-span-3">
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Names & Details of Family Members (परिवार के सदस्यों के नाम व विवरण)</label>
+                                <textarea id="f_family_members_notes" rows="2" placeholder="List family members, sons, daughters, in-laws..." class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 4 -->
+                    <div>
+                        <h3 class="text-sm font-extrabold uppercase tracking-wider text-blue-900 border-b border-slate-200 pb-2 mb-4">
+                            4. Address & Contact Details — Khanda Falsa, Jodhpur (पता एवं मोबाइल नंबर)
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Mohalla / Area (मोहल्ला)</label>
+                                <input type="text" id="f_mohalla_area" value="Khanda Falsa" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Primary Mobile (मोबाइल नंबर)</label>
+                                <input type="tel" id="f_phone_primary" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">WhatsApp Number (व्हाट्सएप)</label>
+                                <input type="tel" id="f_phone_whatsapp" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Email ID</label>
+                                <input type="email" id="f_email" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Current Residential Address (वर्तमान पता)</label>
+                                <input type="text" id="f_current_address" placeholder="House No., Street, Landmark, Khanda Falsa, Jodhpur" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Permanent Address (स्थायी पता)</label>
+                                <input type="text" id="f_permanent_address" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">City</label>
+                                    <input type="text" id="f_city" value="Jodhpur" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Pincode</label>
+                                    <input type="text" id="f_pincode" value="342001" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 5 -->
+                    <div>
+                        <h3 class="text-sm font-extrabold uppercase tracking-wider text-blue-900 border-b border-slate-200 pb-2 mb-4">
+                            5. Education & Employment Details (शिक्षा एवं व्यवसाय / नौकरी विवरण)
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Education Level (शिक्षा का स्तर)</label>
+                                <select id="f_education_level" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm bg-white">
+                                    <option value="">Select Education</option>
+                                    <option value="Illiterate / Non-Formal">Non-Formal / Traditional</option>
+                                    <option value="Primary / Middle">Primary / Middle (Up to 8th)</option>
+                                    <option value="Secondary (10th)">Secondary (10th)</option>
+                                    <option value="Higher Secondary (12th)">Higher Secondary (12th)</option>
+                                    <option value="ANM (Nursing)">ANM (Auxiliary Nurse Midwifery / नर्सिंग)</option>
+                                    <option value="GNM (Nursing)">GNM (General Nursing & Midwifery / नर्सिंग)</option>
+                                    <option value="B.Sc Nursing">B.Sc Nursing (बी.एससी नर्सिंग)</option>
+                                    <option value="Diploma / ITI">Diploma / ITI / Polytechnic / D.Pharm</option>
+                                    <option value="Graduate">Graduate (B.A / B.Com / B.Sc)</option>
+                                    <option value="Post-Graduate / Professional">Post-Graduate / B.Tech / MBA / CA / B.Ed</option>
+                                    <option value="Doctorate / Medical">Doctorate / Medical (MBBS / BDS / MD / B.Pharm / PhD)</option>
+                                    <option value="Islamic / Madarsa / Hifz">Hafiz / Alim / Deeni Taleem</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Degree / Qualification (डिग्री / कक्षा)</label>
+                                <input type="text" id="f_education_stream" list="degreeSuggestions" placeholder="e.g. ANM, GNM, B.Sc Nursing, B.Com, MBBS" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                                <datalist id="degreeSuggestions">
+                                    <option value="ANM (Nursing)" />
+                                    <option value="GNM (Nursing)" />
+                                    <option value="B.Sc Nursing" />
+                                    <option value="M.Sc Nursing" />
+                                    <option value="D.Pharm / B.Pharm" />
+                                    <option value="DMLT / Lab Technician" />
+                                    <option value="MBBS / BDS / BUMS / BHMS" />
+                                    <option value="B.A." />
+                                    <option value="B.Com." />
+                                    <option value="B.Sc." />
+                                    <option value="B.Ed. / BSTC (D.El.Ed)" />
+                                    <option value="B.Tech / B.E." />
+                                    <option value="BCA / MCA" />
+                                    <option value="BBA / MBA" />
+                                    <option value="CA / CS / CMA" />
+                                    <option value="LLB / LLM" />
+                                    <option value="ITI / Polytechnic Diploma" />
+                                </datalist>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">School / College / University</label>
+                                <input type="text" id="f_institution_name" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Employment Status (रोजगार श्रेणी)</label>
+                                <select id="f_employment_status" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm bg-white">
+                                    <option value="">Select Category</option>
+                                    <option value="Business / Self-Employed">Business / Self-Employed (व्यापार)</option>
+                                    <option value="Private Sector Job">Private Sector Job (प्राइवेट नौकरी)</option>
+                                    <option value="Government Job">Government Job (सरकारी नौकरी)</option>
+                                    <option value="Professional / Consultant">Doctor / Engineer / CA / Lawyer</option>
+                                    <option value="Artisan / Craftworker">Traditional Chheepa Textile Artisan</option>
+                                    <option value="Homemaker">Homemaker (गृहिणी)</option>
+                                    <option value="Student">Student (विद्यार्थी)</option>
+                                    <option value="Retired">Retired (सेवानिवृत्त)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Occupation / Designation (व्यवसाय / पद)</label>
+                                <input type="text" id="f_occupation_title" placeholder="e.g. Textile Merchant, Engineer" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Business / Shop / Employer Name</label>
+                                <input type="text" id="f_business_or_employer" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Work Location (कार्यस्थल)</label>
+                                <input type="text" id="f_work_address" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Annual Income Range (वार्षिक आय)</label>
+                                <select id="f_annual_income_range" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm bg-white">
+                                    <option value="">Not Specified</option>
+                                    <option value="Below 2.5 Lakh">Below ₹2.5 Lakh</option>
+                                    <option value="2.5 - 5 Lakh">₹2.5 – ₹5 Lakh</option>
+                                    <option value="5 - 10 Lakh">₹5 – ₹10 Lakh</option>
+                                    <option value="Above 10 Lakh">Above ₹10 Lakh</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Skills / Craft / Specialization</label>
+                                <input type="text" id="f_skills_specialization" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 6 -->
+                    <div>
+                        <h3 class="text-sm font-extrabold uppercase tracking-wider text-blue-900 border-b border-slate-200 pb-2 mb-4">
+                            6. Samaj Role & Notes (समाज में भूमिका एवं विशेष विवरण)
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Samaj Role (समाज में पद)</label>
+                                <input type="text" id="f_samaj_role" value="Member" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Aadhaar Last 4 Digits</label>
+                                <input type="text" id="f_aadhaar_last4" maxlength="4" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Jan Aadhaar / Samaj ID</label>
+                                <input type="text" id="f_bhamashah_jan_aadhaar" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                            </div>
+                            <div class="sm:col-span-3">
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Special Notes (विशेष टिप्पणी)</label>
+                                <input type="text" id="f_special_notes" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-4 border-t border-slate-200">
+                        <button type="button" onclick="switchTab('directory')" class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-semibold text-sm">Cancel</button>
+                        <button type="submit" class="px-6 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-sm shadow-md">
+                            💾 Save Chheepa Samaj Record (रिकॉर्ड सुरक्षित करें)
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- TAB 3: FAMILIES -->
+        <div id="view-families" class="hidden space-y-4">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex items-center justify-between">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900">Chheepa Samaj Households — Khanda Falsa, Jodhpur (परिवार अनुसार सूची)</h2>
+                    <p class="text-xs text-slate-500">Grouped by Family ID. Click "+ Add Member to Family" to add relatives to any house.</p>
+                </div>
+                <button onclick="openNewMemberForm()" class="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs">+ New Household</button>
+            </div>
+            <div id="familiesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        </div>
+
+        <!-- TAB 4: ANALYTICS -->
+        <div id="view-analytics" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                <h2 class="text-lg font-bold text-slate-900 mb-1">Chheepa Jamaat Khanda Falsa — Live Demographic Analytics</h2>
+                <p class="text-xs text-slate-500 mb-6">Overview of male/female summary, literacy rate, population age groups, education, employment, marital status, and blood groups.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6" id="analyticsHighlightTop"></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="analyticsPanels"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- PROFILE & PRINT MODAL -->
+    <div id="profileModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-3xl w-full shadow-2xl border border-slate-200 overflow-hidden my-8">
+            <div class="bg-slate-100 px-6 py-3 border-b border-slate-200 flex items-center justify-between no-print">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-600">Member & Family Profile Card</span>
+                <div class="flex items-center gap-2">
+                    <button onclick="window.print()" class="px-3 py-1.5 rounded-lg bg-blue-700 text-white text-xs font-semibold">🖨️ Print / Save PDF</button>
+                    <button id="modalEditBtn" class="px-3 py-1.5 rounded-lg bg-amber-500 text-white text-xs font-semibold">✏️ Edit</button>
+                    <button onclick="closeProfileModal()" class="px-3 py-1.5 rounded-lg bg-slate-200 text-slate-800 text-xs font-bold">✕ Close</button>
+                </div>
+            </div>
+            <div id="printableCardArea" class="p-6 sm:p-8 space-y-6 bg-white"></div>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'CHHEEPA_SAMAJ_KF_JODHPUR_RECORDS_V1';
+        let dbMembers = [];
+        let filteredMembers = [];
+
+        const INITIAL_SEED = [
+            {
+                id: 1, member_code: 'CSJ-0001', family_id: 'FAM-KF-101', is_head: 1, relation_to_head: 'Self (Head)',
+                full_name: 'Haji Mohammed Farooq Chheepa', full_name_hi: 'हाजी मोहम्मद फारूक छीपा',
+                gender: 'Male', dob: '1966-04-12', age: 60, blood_group: 'B+', marital_status: 'Married',
+                father_name: 'Late Haji Abdul Rahim Chheepa', mother_name: 'Late Hajjan Fatima Begum',
+                spouse_name: 'Rashida Begum', children_count: 4, total_family_members: 6,
+                family_members_notes: 'Imran (Son), Irfan (Son), Rukhsar (Daughter-Married), Amina (Daughter-in-law)',
+                gotra_subcaste: 'Solanki Chheepa', native_origin: 'Khanda Falsa, Jodhpur', mohalla_area: 'Adaa Bazaar / Khanda Falsa Chowk',
+                current_address: 'House No. 42, Near Jama Masjid, Khanda Falsa, Jodhpur', permanent_address: 'House No. 42, Near Jama Masjid, Khanda Falsa, Jodhpur',
+                city: 'Jodhpur', pincode: '342001', phone_primary: '9829011223', phone_whatsapp: '9829011223', email: 'farooq.textiles@example.com',
+                education_level: 'Graduate', education_stream: 'B.Com', institution_name: 'JNVU, Jodhpur',
+                employment_status: 'Business / Self-Employed', occupation_title: 'Traditional Handblock & Textile Merchant',
+                business_or_employer: 'Farooq & Sons Chheepa Handloom Exports', work_address: 'Main Road, Khanda Falsa, Jodhpur',
+                annual_income_range: '5 - 10 Lakh', skills_specialization: 'Dabu & Bagru Handblock Printing',
+                aadhaar_last4: '4821', bhamashah_jan_aadhaar: 'JAN-29384711', samaj_role: 'Samaj Patron / Elder Committee',
+                special_notes: 'Active contributor to Chheepa Jamaat scholarship fund.', photo_data: ''
+            },
+            {
+                id: 2, member_code: 'CSJ-0002', family_id: 'FAM-KF-101', is_head: 0, relation_to_head: 'Wife',
+                full_name: 'Rashida Begum', full_name_hi: 'रशीदा बेगम',
+                gender: 'Female', dob: '1970-08-20', age: 56, blood_group: 'O+', marital_status: 'Married',
+                father_name: 'Abdul Sattar Chheepa', mother_name: 'Zainab Bibi',
+                spouse_name: 'Haji Mohammed Farooq Chheepa', children_count: 4, total_family_members: 6,
+                family_members_notes: 'Wife of Haji Mohammed Farooq Chheepa',
+                gotra_subcaste: 'Chauhan Chheepa', native_origin: 'Pipar City / Jodhpur', mohalla_area: 'Adaa Bazaar / Khanda Falsa Chowk',
+                current_address: 'House No. 42, Near Jama Masjid, Khanda Falsa, Jodhpur', permanent_address: 'House No. 42, Near Jama Masjid, Khanda Falsa, Jodhpur',
+                city: 'Jodhpur', pincode: '342001', phone_primary: '9829011224', phone_whatsapp: '9829011224', email: '',
+                education_level: 'Secondary (10th)', education_stream: 'Arts', institution_name: 'Govt. Girls School, Jodhpur',
+                employment_status: 'Homemaker', occupation_title: 'Homemaker & Bandhej Artisan',
+                business_or_employer: 'Home Boutique', work_address: 'Khanda Falsa, Jodhpur',
+                annual_income_range: 'Below 2.5 Lakh', skills_specialization: 'Tie-Dye (Bandhani) Craft',
+                aadhaar_last4: '9912', bhamashah_jan_aadhaar: 'JAN-29384711', samaj_role: 'Women Wing Member',
+                special_notes: '', photo_data: ''
+            },
+            {
+                id: 3, member_code: 'CSJ-0003', family_id: 'FAM-KF-101', is_head: 0, relation_to_head: 'Son',
+                full_name: 'Er. Imran Ahmed Chheepa', full_name_hi: 'इमरान अहमद छीपा',
+                gender: 'Male', dob: '1993-11-05', age: 32, blood_group: 'B+', marital_status: 'Married',
+                father_name: 'Haji Mohammed Farooq Chheepa', mother_name: 'Rashida Begum',
+                spouse_name: 'Dr. Amina Parveen', children_count: 1, total_family_members: 6,
+                family_members_notes: 'Son of Haji Mohammed Farooq Chheepa',
+                gotra_subcaste: 'Solanki Chheepa', native_origin: 'Khanda Falsa, Jodhpur', mohalla_area: 'Adaa Bazaar / Khanda Falsa Chowk',
+                current_address: 'House No. 42, Near Jama Masjid, Khanda Falsa, Jodhpur', permanent_address: 'House No. 42, Near Jama Masjid, Khanda Falsa, Jodhpur',
+                city: 'Jodhpur', pincode: '342001', phone_primary: '9414122334', phone_whatsapp: '9414122334', email: 'imran.chheepa@example.com',
+                education_level: 'Post-Graduate / Professional', education_stream: 'B.Tech (Computer Science)', institution_name: 'MBM Engineering College, Jodhpur',
+                employment_status: 'Private Sector Job', occupation_title: 'Senior Software Architect',
+                business_or_employer: 'Marwar Tech Solutions Pvt Ltd', work_address: 'IT Park, Basni, Jodhpur',
+                annual_income_range: 'Above 10 Lakh', skills_specialization: 'Software Engineering',
+                aadhaar_last4: '3319', bhamashah_jan_aadhaar: 'JAN-29384711', samaj_role: 'Youth Wing Coordinator',
+                special_notes: 'Organizes free career counseling camps for Samaj students.', photo_data: ''
+            },
+            {
+                id: 4, member_code: 'CSJ-0004', family_id: 'FAM-KF-101', is_head: 0, relation_to_head: 'Daughter-in-Law',
+                full_name: 'Dr. Amina Parveen Chheepa', full_name_hi: 'डॉ. अमीना परवीन छीपा',
+                gender: 'Female', dob: '1995-02-18', age: 31, blood_group: 'A+', marital_status: 'Married',
+                father_name: 'Mohammed Yusuf Chheepa', mother_name: 'Salma Bano',
+                spouse_name: 'Er. Imran Ahmed Chheepa', children_count: 1, total_family_members: 6,
+                family_members_notes: 'Wife of Er. Imran Ahmed Chheepa',
+                gotra_subcaste: 'Bhati Chheepa', native_origin: 'Sojat Gate, Jodhpur', mohalla_area: 'Adaa Bazaar / Khanda Falsa Chowk',
+                current_address: 'House No. 42, Near Jama Masjid, Khanda Falsa, Jodhpur', permanent_address: 'House No. 42, Near Jama Masjid, Khanda Falsa, Jodhpur',
+                city: 'Jodhpur', pincode: '342001', phone_primary: '9414199887', phone_whatsapp: '9414199887', email: 'dr.amina@example.com',
+                education_level: 'Doctorate / Medical', education_stream: 'MBBS, MD (Pediatrics)', institution_name: 'Dr. S.N. Medical College, Jodhpur',
+                employment_status: 'Government Job', occupation_title: 'Medical Officer (Pediatrician)',
+                business_or_employer: 'Umaid Hospital, Jodhpur', work_address: 'Siwanchi Gate Rd, Jodhpur',
+                annual_income_range: 'Above 10 Lakh', skills_specialization: 'Pediatrics, Community Health Camps',
+                aadhaar_last4: '7741', bhamashah_jan_aadhaar: 'JAN-29384711', samaj_role: 'Medical Committee Lead',
+                special_notes: 'Leads annual blood donation and health checkup camp in Khanda Falsa.', photo_data: ''
+            },
+            {
+                id: 5, member_code: 'CSJ-0005', family_id: 'FAM-KF-102', is_head: 1, relation_to_head: 'Self (Head)',
+                full_name: 'Abdul Qadir Chheepa', full_name_hi: 'अब्दुल कादिर छीपा',
+                gender: 'Male', dob: '1978-06-15', age: 48, blood_group: 'AB+', marital_status: 'Married',
+                father_name: 'Haji Ghulam Nabi Chheepa', mother_name: 'Razia Sultan',
+                spouse_name: 'Shabnam Bano', children_count: 3, total_family_members: 5,
+                family_members_notes: 'Zaid (Son - Student), Sana (Daughter - CA Student), Rehan (Son)',
+                gotra_subcaste: 'Panwar Chheepa', native_origin: 'Khanda Falsa, Jodhpur', mohalla_area: 'Bhistiyon Ka Bas / Khanda Falsa',
+                current_address: 'Plot 19, Gali No. 3, Khanda Falsa, Jodhpur', permanent_address: 'Plot 19, Gali No. 3, Khanda Falsa, Jodhpur',
+                city: 'Jodhpur', pincode: '342001', phone_primary: '9928055667', phone_whatsapp: '9928055667', email: 'qadir.dyers@example.com',
+                education_level: 'Higher Secondary (12th)', education_stream: 'Commerce', institution_name: 'Mahesh Sr. Sec. School, Jodhpur',
+                employment_status: 'Business / Self-Employed', occupation_title: 'Screen Printing & Fabric Processing Owner',
+                business_or_employer: 'Marwar Chheepa Tex Prints', work_address: 'Basni Phase II, Jodhpur',
+                annual_income_range: '5 - 10 Lakh', skills_specialization: 'Textile Screen Printing & Export Processing',
+                aadhaar_last4: '6104', bhamashah_jan_aadhaar: 'JAN-88412093', samaj_role: 'General Secretary',
+                special_notes: 'Secretary of Khanda Falsa Chheepa Jamaat Committee.', photo_data: ''
+            }
+        ];
+
+        function loadFromStorage() {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) {
+                dbMembers = [...INITIAL_SEED];
+                saveToStorage();
+            } else {
+                try { dbMembers = JSON.parse(raw); } catch (e) { dbMembers = [...INITIAL_SEED]; }
+            }
+            updateDashboard();
+        }
+
+        function saveToStorage() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(dbMembers));
+        }
+
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function showToast(msg, isError = false) {
+            const banner = document.getElementById('toastBanner');
+            banner.className = `mb-4 p-4 rounded-xl border font-medium flex items-center justify-between shadow-sm ${
+                isError ? 'bg-rose-50 border-rose-200 text-rose-900' : 'bg-emerald-50 border-emerald-200 text-emerald-900'
+            }`;
+            document.getElementById('toastMessage').textContent = msg;
+            banner.classList.remove('hidden');
+            setTimeout(() => banner.classList.add('hidden'), 4500);
+        }
+
+        function switchTab(tabName) {
+            ['directory', 'form', 'families', 'analytics'].forEach(t => {
+                document.getElementById(`view-${t}`).classList.add('hidden');
+                const btn = document.getElementById(`tabBtn-${t}`);
+                if (btn) {
+                    if (t === tabName) {
+                        btn.className = "px-4 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 bg-white text-blue-950 shadow";
+                    } else if (t === 'form') {
+                        btn.className = "px-4 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 bg-amber-400 hover:bg-amber-300 text-slate-950 shadow";
+                    } else {
+                        btn.className = "px-4 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2 bg-blue-900/60 hover:bg-blue-800 text-white border border-blue-700";
+                    }
+                }
+            });
+            document.getElementById(`view-${tabName}`).classList.remove('hidden');
+            if (tabName === 'families') renderFamiliesView();
+            if (tabName === 'analytics') renderAnalyticsView();
+        }
+
+        function getFamiliesSummary() {
+            const map = {};
+            dbMembers.forEach(m => {
+                const fid = m.family_id || 'FAM-KF-UNASSIGNED';
+                if (!map[fid]) {
+                    map[fid] = {
+                        family_id: fid,
+                        head_name: '',
+                        mohalla_area: m.mohalla_area || 'Khanda Falsa',
+                        current_address: m.current_address || '',
+                        gotra_subcaste: m.gotra_subcaste || '',
+                        registered_count: 0,
+                        total_family_members: m.total_family_members || 1
+                    };
+                }
+                map[fid].registered_count++;
+                if (m.is_head) map[fid].head_name = m.full_name;
+                if ((m.total_family_members || 1) > map[fid].total_family_members) {
+                    map[fid].total_family_members = m.total_family_members;
+                }
+            });
+            return Object.values(map);
+        }
+
+        function updateDashboard() {
+            const families = getFamiliesSummary();
+            document.getElementById('statTotalMembers').textContent = dbMembers.length;
+            document.getElementById('statTotalFamilies').textContent = families.length;
+            const males = dbMembers.filter(m => m.gender === 'Male').length;
+            const females = dbMembers.filter(m => m.gender === 'Female').length;
+            document.getElementById('statGenderSplit').textContent = `${males} M / ${females} F`;
+            document.getElementById('statYouthCount').textContent = dbMembers.filter(m => m.age >= 18 && m.age <= 35).length;
+            document.getElementById('statMarriedCount').textContent = dbMembers.filter(m => m.marital_status === 'Married').length;
+
+            const famSelect = document.getElementById('filterFamily');
+            const curr = famSelect.value;
+            famSelect.innerHTML = `<option value="">All Families (सभी परिवार - ${families.length})</option>`;
+            const dl = document.getElementById('existingFamiliesList');
+            dl.innerHTML = '';
+            families.forEach(f => {
+                famSelect.innerHTML += `<option value="${escapeHtml(f.family_id)}">${escapeHtml(f.family_id)} — ${escapeHtml(f.head_name || 'Family')} (${f.registered_count})</option>`;
+                dl.innerHTML += `<option value="${escapeHtml(f.family_id)}">${escapeHtml(f.head_name || '')}</option>`;
+            });
+            famSelect.value = curr;
+            applyFilters();
+        }
+
+        function resetFilters() {
+            ['searchInput', 'filterFamily', 'filterMarital', 'filterEducation', 'filterEmployment', 'filterGender', 'filterBlood', 'filterMohalla', 'filterMinAge', 'filterMaxAge'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            document.getElementById('filterOnlyHeads').checked = false;
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const q = document.getElementById('searchInput').value.trim().toLowerCase();
+            const fam = document.getElementById('filterFamily').value;
+            const mar = document.getElementById('filterMarital').value;
+            const edu = document.getElementById('filterEducation').value;
+            const emp = document.getElementById('filterEmployment').value;
+            const gen = document.getElementById('filterGender').value;
+            const bld = document.getElementById('filterBlood').value;
+            const moh = document.getElementById('filterMohalla').value.trim().toLowerCase();
+            const minA = parseInt(document.getElementById('filterMinAge').value, 10);
+            const maxA = parseInt(document.getElementById('filterMaxAge').value, 10);
+            const headsOnly = document.getElementById('filterOnlyHeads').checked;
+
+            filteredMembers = dbMembers.filter(m => {
+                if (q) {
+                    const hay = [
+                        m.full_name, m.full_name_hi, m.member_code, m.family_id,
+                        m.father_name, m.mother_name, m.spouse_name, m.phone_primary,
+                        m.current_address, m.mohalla_area, m.occupation_title,
+                        m.business_or_employer, m.education_stream, m.gotra_subcaste,
+                        m.family_members_notes
+                    ].join(' ').toLowerCase();
+                    if (!hay.includes(q)) return false;
+                }
+                if (fam && m.family_id !== fam) return false;
+                if (mar && m.marital_status !== mar) return false;
+                if (edu && m.education_level !== edu) return false;
+                if (emp && m.employment_status !== emp) return false;
+                if (gen && m.gender !== gen) return false;
+                if (bld && m.blood_group !== bld) return false;
+                if (moh && !(m.mohalla_area || '').toLowerCase().includes(moh)) return false;
+                if (headsOnly && !m.is_head) return false;
+                if (!isNaN(minA) && (m.age || 0) < minA) return false;
+                if (!isNaN(maxA) && (m.age || 0) > maxA) return false;
+                return true;
+            });
+
+            document.getElementById('resultsCountBadge').textContent = `Showing ${filteredMembers.length} record${filteredMembers.length === 1 ? '' : 's'}`;
+            renderMembersGrid();
+        }
+
+        function renderMembersGrid() {
+            const container = document.getElementById('membersGrid');
+            if (!filteredMembers.length) {
+                container.innerHTML = `<div class="col-span-full bg-white rounded-2xl border p-12 text-center text-slate-500">No matching records found.</div>`;
+                return;
+            }
+            container.innerHTML = filteredMembers.map(m => {
+                const avatar = m.photo_data
+                    ? `<img src="${m.photo_data}" class="w-16 h-16 rounded-2xl object-cover border-2 border-blue-200 shrink-0" />`
+                    : `<div class="w-16 h-16 rounded-2xl ${m.gender === 'Female' ? 'bg-pink-100 text-pink-800' : 'bg-blue-100 text-blue-800'} border flex items-center justify-center font-extrabold text-xl shrink-0">${escapeHtml((m.full_name || 'C')[0].toUpperCase())}</div>`;
+                const headBadge = m.is_head
+                    ? `<span class="px-2 py-0.5 text-[11px] font-bold bg-amber-100 text-amber-900 rounded-md border border-amber-300">👑 Head (मुखिया)</span>`
+                    : `<span class="px-2 py-0.5 text-[11px] font-semibold bg-slate-100 text-slate-700 rounded-md">${escapeHtml(m.relation_to_head)}</span>`;
+
+                return `
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-xs hover:shadow-md transition p-5 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-start gap-4">
+                            ${avatar}
+                            <div class="flex-1 min-w-0">
+                                <div class="flex flex-wrap items-center gap-1.5 mb-1">
+                                    <span class="text-[11px] font-mono font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200">${escapeHtml(m.member_code)}</span>
+                                    <button onclick="filterByFamily('${escapeHtml(m.family_id)}')" class="text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-slate-100 hover:bg-blue-100 text-slate-700">🏠 ${escapeHtml(m.family_id)}</button>
+                                    ${headBadge}
+                                    ${m.blood_group ? `<span class="text-[11px] font-bold px-1.5 py-0.5 rounded bg-rose-50 text-rose-700">🩸 ${escapeHtml(m.blood_group)}</span>` : ''}
+                                </div>
+                                <h3 class="text-base font-extrabold text-slate-900 truncate">${escapeHtml(m.full_name)}</h3>
+                                ${m.full_name_hi ? `<p class="text-xs font-semibold text-blue-800">${escapeHtml(m.full_name_hi)}</p>` : ''}
+                                <div class="text-xs text-slate-600 mt-1">
+                                    <strong>${escapeHtml(m.gender)}, ${m.age} yrs</strong> • ${escapeHtml(m.marital_status)} ${m.gotra_subcaste ? `• Gotra: <strong>${escapeHtml(m.gotra_subcaste)}</strong>` : ''}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-x-4 gap-y-1.5 mt-4 pt-3 border-t border-slate-100 text-xs">
+                            <div><span class="text-slate-400">Father (पिता):</span> <strong class="block truncate">${escapeHtml(m.father_name || '—')}</strong></div>
+                            <div><span class="text-slate-400">Mother (माता):</span> <strong class="block truncate">${escapeHtml(m.mother_name || '—')}</strong></div>
+                            <div><span class="text-slate-400">Husband/Wife:</span> <strong class="block truncate">${escapeHtml(m.spouse_name || '—')}</strong></div>
+                            <div><span class="text-slate-400">Family Members:</span> <strong class="block">${m.total_family_members || 1} (${m.children_count || 0} Kids)</strong></div>
+                        </div>
+
+                        <div class="mt-3 pt-3 border-t border-slate-100 space-y-1 text-xs">
+                            <div><span class="text-slate-400">🎓 Education:</span> <strong>${escapeHtml(m.education_level || '—')} ${m.education_stream ? `(${escapeHtml(m.education_stream)})` : ''}</strong></div>
+                            <div><span class="text-slate-400">💼 Occupation:</span> <strong>${escapeHtml(m.occupation_title || m.employment_status || '—')} ${m.business_or_employer ? `— ${escapeHtml(m.business_or_employer)}` : ''}</strong></div>
+                            <div><span class="text-slate-400">📍 Address:</span> <span>${escapeHtml(m.current_address || m.mohalla_area)}</span></div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-2 mt-4 pt-3 border-t border-slate-100">
+                        <span class="text-xs font-semibold text-slate-700">${m.phone_primary ? `📞 ${escapeHtml(m.phone_primary)}` : ''}</span>
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="viewMemberProfile(${m.id})" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-800 text-xs font-bold">🪪 Card</button>
+                            <button onclick="addRelativeToFamily('${escapeHtml(m.family_id)}')" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold">+ Family Member</button>
+                            <button onclick="editMember(${m.id})" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 text-xs font-bold">✏️ Edit</button>
+                            <button onclick="deleteMember(${m.id})" class="px-2 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold">🗑️</button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function filterByFamily(fid) {
+            document.getElementById('filterFamily').value = fid;
+            switchTab('directory');
+            applyFilters();
+        }
+
+        function generateNewFamilyId() {
+            document.getElementById('f_family_id').value = `FAM-KF-${Math.floor(100 + Math.random() * 900)}`;
+        }
+
+        function autoComputeAge() {
+            const dobVal = document.getElementById('f_dob').value;
+            if (!dobVal) return;
+            const dob = new Date(dobVal);
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            if (today.getMonth() < dob.getMonth() || (today.getMonth() === dob.getMonth() && today.getDate() < dob.getDate())) age--;
+            if (age >= 0) document.getElementById('f_age').value = age;
+        }
+
+        function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const maxDim = 220;
+                    let w = img.width, h = img.height;
+                    if (w > h && w > maxDim) { h = Math.round(h * maxDim / w); w = maxDim; }
+                    else if (h > maxDim) { w = Math.round(w * maxDim / h); h = maxDim; }
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                    document.getElementById('f_photo_data').value = dataUrl;
+                    document.getElementById('photoPreviewBox').innerHTML = `<img src="${dataUrl}" class="w-full h-full object-cover" />`;
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearPhoto() {
+            document.getElementById('f_photo_data').value = '';
+            document.getElementById('photoPreviewBox').innerHTML = '👤';
+        }
+
+        function openNewMemberForm(prefill = null) {
+            document.getElementById('memberForm').reset();
+            document.getElementById('f_id').value = '';
+            clearPhoto();
+            document.getElementById('f_native_origin').value = 'Khanda Falsa, Jodhpur';
+            document.getElementById('f_mohalla_area').value = 'Khanda Falsa';
+            document.getElementById('f_city').value = 'Jodhpur';
+            document.getElementById('f_pincode').value = '342001';
+            document.getElementById('f_samaj_role').value = 'Member';
+
+            if (prefill) {
+                document.getElementById('f_family_id').value = prefill.family_id;
+                document.getElementById('f_is_head').checked = false;
+                document.getElementById('f_relation_to_head').value = 'Son';
+                document.getElementById('f_gotra_subcaste').value = prefill.gotra_subcaste || '';
+                document.getElementById('f_mohalla_area').value = prefill.mohalla_area || 'Khanda Falsa';
+                document.getElementById('f_current_address').value = prefill.current_address || '';
+                document.getElementById('f_father_name').value = prefill.head_name || '';
+                document.getElementById('f_total_family_members').value = prefill.total_family_members || 1;
+            } else {
+                generateNewFamilyId();
+                document.getElementById('f_is_head').checked = true;
+                document.getElementById('f_relation_to_head').value = 'Self (Head)';
+            }
+            switchTab('form');
+        }
+
+        function addRelativeToFamily(fid) {
+            const fam = dbMembers.filter(m => m.family_id === fid);
+            const head = fam.find(m => m.is_head) || fam[0] || {};
+            openNewMemberForm({
+                family_id: fid,
+                head_name: head.full_name || '',
+                gotra_subcaste: head.gotra_subcaste || '',
+                mohalla_area: head.mohalla_area || 'Khanda Falsa',
+                current_address: head.current_address || '',
+                total_family_members: head.total_family_members || (fam.length + 1)
+            });
+        }
+
+        function editMember(id) {
+            closeProfileModal();
+            const m = dbMembers.find(x => x.id === id);
+            if (!m) return;
+            document.getElementById('f_id').value = m.id;
+            document.getElementById('f_family_id').value = m.family_id || '';
+            document.getElementById('f_is_head').checked = !!m.is_head;
+            document.getElementById('f_relation_to_head').value = m.relation_to_head || 'Self (Head)';
+            document.getElementById('f_full_name').value = m.full_name || '';
+            document.getElementById('f_full_name_hi').value = m.full_name_hi || '';
+            document.getElementById('f_gotra_subcaste').value = m.gotra_subcaste || '';
+            document.getElementById('f_gender').value = m.gender || 'Male';
+            document.getElementById('f_dob').value = m.dob || '';
+            document.getElementById('f_age').value = m.age || 0;
+            document.getElementById('f_marital_status').value = m.marital_status || 'Single';
+            document.getElementById('f_blood_group').value = m.blood_group || '';
+            document.getElementById('f_father_name').value = m.father_name || '';
+            document.getElementById('f_mother_name').value = m.mother_name || '';
+            document.getElementById('f_spouse_name').value = m.spouse_name || '';
+            document.getElementById('f_total_family_members').value = m.total_family_members || 1;
+            document.getElementById('f_children_count').value = m.children_count || 0;
+            document.getElementById('f_native_origin').value = m.native_origin || 'Khanda Falsa, Jodhpur';
+            document.getElementById('f_family_members_notes').value = m.family_members_notes || '';
+            document.getElementById('f_mohalla_area').value = m.mohalla_area || 'Khanda Falsa';
+            document.getElementById('f_phone_primary').value = m.phone_primary || '';
+            document.getElementById('f_phone_whatsapp').value = m.phone_whatsapp || '';
+            document.getElementById('f_email').value = m.email || '';
+            document.getElementById('f_current_address').value = m.current_address || '';
+            document.getElementById('f_permanent_address').value = m.permanent_address || '';
+            document.getElementById('f_city').value = m.city || 'Jodhpur';
+            document.getElementById('f_pincode').value = m.pincode || '342001';
+            document.getElementById('f_education_level').value = m.education_level || '';
+            document.getElementById('f_education_stream').value = m.education_stream || '';
+            document.getElementById('f_institution_name').value = m.institution_name || '';
+            document.getElementById('f_employment_status').value = m.employment_status || '';
+            document.getElementById('f_occupation_title').value = m.occupation_title || '';
+            document.getElementById('f_business_or_employer').value = m.business_or_employer || '';
+            document.getElementById('f_work_address').value = m.work_address || '';
+            document.getElementById('f_annual_income_range').value = m.annual_income_range || '';
+            document.getElementById('f_skills_specialization').value = m.skills_specialization || '';
+            document.getElementById('f_samaj_role').value = m.samaj_role || 'Member';
+            document.getElementById('f_aadhaar_last4').value = m.aadhaar_last4 || '';
+            document.getElementById('f_bhamashah_jan_aadhaar').value = m.bhamashah_jan_aadhaar || '';
+            document.getElementById('f_special_notes').value = m.special_notes || '';
+            if (m.photo_data) {
+                document.getElementById('f_photo_data').value = m.photo_data;
+                document.getElementById('photoPreviewBox').innerHTML = `<img src="${m.photo_data}" class="w-full h-full object-cover" />`;
+            } else clearPhoto();
+            switchTab('form');
+        }
+
+        function saveMemberForm(e) {
+            e.preventDefault();
+            const editId = parseInt(document.getElementById('f_id').value, 10);
+            const nextId = dbMembers.reduce((max, x) => Math.max(max, x.id || 0), 0) + 1;
+            const record = {
+                id: editId || nextId,
+                member_code: editId ? (dbMembers.find(x => x.id === editId)?.member_code || `CSJ-${String(editId).padStart(4, '0')}`) : `CSJ-${String(nextId).padStart(4, '0')}`,
+                family_id: document.getElementById('f_family_id').value.trim(),
+                is_head: document.getElementById('f_is_head').checked ? 1 : 0,
+                relation_to_head: document.getElementById('f_relation_to_head').value,
+                full_name: document.getElementById('f_full_name').value.trim(),
+                full_name_hi: document.getElementById('f_full_name_hi').value.trim(),
+                gotra_subcaste: document.getElementById('f_gotra_subcaste').value.trim(),
+                gender: document.getElementById('f_gender').value,
+                dob: document.getElementById('f_dob').value,
+                age: parseInt(document.getElementById('f_age').value, 10) || 0,
+                marital_status: document.getElementById('f_marital_status').value,
+                blood_group: document.getElementById('f_blood_group').value,
+                father_name: document.getElementById('f_father_name').value.trim(),
+                mother_name: document.getElementById('f_mother_name').value.trim(),
+                spouse_name: document.getElementById('f_spouse_name').value.trim(),
+                total_family_members: parseInt(document.getElementById('f_total_family_members').value, 10) || 1,
+                children_count: parseInt(document.getElementById('f_children_count').value, 10) || 0,
+                native_origin: document.getElementById('f_native_origin').value.trim(),
+                family_members_notes: document.getElementById('f_family_members_notes').value.trim(),
+                mohalla_area: document.getElementById('f_mohalla_area').value.trim(),
+                phone_primary: document.getElementById('f_phone_primary').value.trim(),
+                phone_whatsapp: document.getElementById('f_phone_whatsapp').value.trim(),
+                email: document.getElementById('f_email').value.trim(),
+                current_address: document.getElementById('f_current_address').value.trim(),
+                permanent_address: document.getElementById('f_permanent_address').value.trim(),
+                city: document.getElementById('f_city').value.trim(),
+                pincode: document.getElementById('f_pincode').value.trim(),
+                education_level: document.getElementById('f_education_level').value,
+                education_stream: document.getElementById('f_education_stream').value.trim(),
+                institution_name: document.getElementById('f_institution_name').value.trim(),
+                employment_status: document.getElementById('f_employment_status').value,
+                occupation_title: document.getElementById('f_occupation_title').value.trim(),
+                business_or_employer: document.getElementById('f_business_or_employer').value.trim(),
+                work_address: document.getElementById('f_work_address').value.trim(),
+                annual_income_range: document.getElementById('f_annual_income_range').value,
+                skills_specialization: document.getElementById('f_skills_specialization').value.trim(),
+                samaj_role: document.getElementById('f_samaj_role').value.trim(),
+                aadhaar_last4: document.getElementById('f_aadhaar_last4').value.trim(),
+                bhamashah_jan_aadhaar: document.getElementById('f_bhamashah_jan_aadhaar').value.trim(),
+                special_notes: document.getElementById('f_special_notes').value.trim(),
+                photo_data: document.getElementById('f_photo_data').value
+            };
+
+            if (editId) {
+                const idx = dbMembers.findIndex(x => x.id === editId);
+                if (idx > -1) dbMembers[idx] = record;
+            } else {
+                dbMembers.push(record);
+            }
+            saveToStorage();
+            updateDashboard();
+            showToast(`Saved record for ${record.full_name} (${record.member_code})`);
+            switchTab('directory');
+        }
+
+        function deleteMember(id) {
+            const m = dbMembers.find(x => x.id === id);
+            if (!m || !confirm(`Delete record of ${m.full_name}?`)) return;
+            dbMembers = dbMembers.filter(x => x.id !== id);
+            saveToStorage();
+            updateDashboard();
+            showToast('Record deleted.');
+        }
+
+        function viewMemberProfile(id) {
+            const m = dbMembers.find(x => x.id === id);
+            if (!m) return;
+            const fam = dbMembers.filter(x => x.family_id === m.family_id);
+            document.getElementById('modalEditBtn').onclick = () => editMember(m.id);
+
+            const famRows = fam.map(fm => `
+                <tr class="border-b border-slate-100 ${fm.id === m.id ? 'bg-blue-50 font-semibold' : ''}">
+                    <td class="py-2 px-3 text-xs font-mono">${escapeHtml(fm.member_code)}</td>
+                    <td class="py-2 px-3 text-xs">${escapeHtml(fm.full_name)} ${fm.is_head ? '👑' : ''}</td>
+                    <td class="py-2 px-3 text-xs">${escapeHtml(fm.relation_to_head)}</td>
+                    <td class="py-2 px-3 text-xs">${fm.age} yrs (${escapeHtml(fm.gender)})</td>
+                    <td class="py-2 px-3 text-xs">${escapeHtml(fm.marital_status)}</td>
+                    <td class="py-2 px-3 text-xs">${escapeHtml(fm.occupation_title || '—')}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('printableCardArea').innerHTML = `
+                <div class="border-b-2 border-blue-900 pb-4 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-blue-800">छीपा समाज जामात खांडा फलसा, जोधपुर</p>
+                        <h2 class="text-2xl font-extrabold text-slate-900">CHHEEPA SAMAJ KHANDA FALSA, JODHPUR</h2>
+                        <p class="text-xs text-slate-600">Member & Family Parichay Patra</p>
+                    </div>
+                    <div class="text-right font-mono">
+                        <span class="px-3 py-1 rounded bg-blue-900 text-white text-xs font-bold block">${escapeHtml(m.member_code)}</span>
+                        <span class="text-xs font-bold text-slate-600 mt-1 block">Family: ${escapeHtml(m.family_id)}</span>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
+                    <div><span class="text-xs text-slate-500 block">Full Name</span><strong>${escapeHtml(m.full_name)}</strong></div>
+                    <div><span class="text-xs text-slate-500 block">Hindi Name</span><strong>${escapeHtml(m.full_name_hi || '—')}</strong></div>
+                    <div><span class="text-xs text-slate-500 block">Age / Gender / Marital</span><strong>${m.age} yrs • ${escapeHtml(m.gender)} • ${escapeHtml(m.marital_status)}</strong></div>
+                    <div><span class="text-xs text-slate-500 block">Father's Name</span><strong>${escapeHtml(m.father_name || '—')}</strong></div>
+                    <div><span class="text-xs text-slate-500 block">Mother's Name</span><strong>${escapeHtml(m.mother_name || '—')}</strong></div>
+                    <div><span class="text-xs text-slate-500 block">Husband / Wife</span><strong>${escapeHtml(m.spouse_name || '—')}</strong></div>
+                    <div><span class="text-xs text-slate-500 block">Education</span><strong>${escapeHtml(m.education_level || '—')} (${escapeHtml(m.education_stream || '')})</strong></div>
+                    <div><span class="text-xs text-slate-500 block">Employment / Occupation</span><strong>${escapeHtml(m.occupation_title || m.employment_status || '—')}</strong></div>
+                    <div><span class="text-xs text-slate-500 block">Address & Phone</span><strong>${escapeHtml(m.current_address || m.mohalla_area)} • ${escapeHtml(m.phone_primary || '')}</strong></div>
+                </div>
+                <div>
+                    <h4 class="text-xs font-extrabold uppercase text-blue-900 mb-2">Household Members (${escapeHtml(m.family_id)})</h4>
+                    <table class="w-full text-left border border-slate-200">
+                        <thead class="bg-slate-100 text-[11px] uppercase">
+                            <tr><th class="p-2">Code</th><th class="p-2">Name</th><th class="p-2">Relation</th><th class="p-2">Age</th><th class="p-2">Marital</th><th class="p-2">Occupation</th></tr>
+                        </thead>
+                        <tbody>${famRows}</tbody>
+                    </table>
+                </div>
+            `;
+            document.getElementById('profileModal').classList.remove('hidden');
+            document.getElementById('profileModal').classList.add('flex');
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profileModal').classList.add('hidden');
+            document.getElementById('profileModal').classList.remove('flex');
+        }
+
+        function renderFamiliesView() {
+            const families = getFamiliesSummary();
+            const container = document.getElementById('familiesContainer');
+            container.innerHTML = families.map(f => {
+                const mems = dbMembers.filter(m => m.family_id === f.family_id);
+                return `
+                <div class="bg-white rounded-2xl border border-slate-200 p-5 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between border-b pb-3">
+                            <div>
+                                <span class="text-xs font-mono font-bold px-2.5 py-1 rounded bg-amber-100 text-amber-900">🏠 ${escapeHtml(f.family_id)}</span>
+                                <h3 class="text-base font-extrabold mt-2">Head: ${escapeHtml(f.head_name || 'Unspecified')}</h3>
+                                <p class="text-xs text-slate-500">${escapeHtml(f.mohalla_area)} • ${escapeHtml(f.current_address)}</p>
+                            </div>
+                            <span class="text-xs font-bold text-blue-900 bg-blue-50 px-2.5 py-1 rounded-lg h-fit">${f.registered_count} Registered</span>
+                        </div>
+                        <div class="mt-3 space-y-1">
+                            ${mems.map(m => `<div onclick="viewMemberProfile(${m.id})" class="cursor-pointer p-1.5 rounded hover:bg-slate-50 flex justify-between text-xs"><span><strong>${escapeHtml(m.full_name)}</strong> (${escapeHtml(m.relation_to_head)}, ${m.age}y)</span><span class="text-slate-500">${escapeHtml(m.occupation_title || m.marital_status)}</span></div>`).join('')}
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t flex justify-between">
+                        <button onclick="filterByFamily('${escapeHtml(f.family_id)}')" class="text-xs font-bold text-blue-700">View in Directory →</button>
+                        <button onclick="addRelativeToFamily('${escapeHtml(f.family_id)}')" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold">+ Add Member to Family</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function renderAnalyticsView() {
+            const countBy = (fn) => {
+                const map = {};
+                dbMembers.forEach(m => {
+                    const k = fn(m) || 'Unspecified';
+                    map[k] = (map[k] || 0) + 1;
+                });
+                return map;
+            };
+
+            const totalPop = dbMembers.length;
+            const males = dbMembers.filter(m => m.gender === 'Male').length;
+            const females = dbMembers.filter(m => m.gender === 'Female').length;
+            const otherGen = Math.max(0, totalPop - males - females);
+            const malePct = totalPop > 0 ? ((males / totalPop) * 100).toFixed(1) : '0.0';
+            const femalePct = totalPop > 0 ? ((females / totalPop) * 100).toFixed(1) : '0.0';
+            const sexRatio = males > 0 ? Math.round((females / males) * 1000) : 0;
+
+            const isLiterate = (m) => m.education_level && m.education_level !== 'Illiterate / Non-Formal';
+            const literateCount = dbMembers.filter(isLiterate).length;
+            const nonFormalCount = Math.max(0, totalPop - literateCount);
+            const maleLitCount = dbMembers.filter(m => m.gender === 'Male' && isLiterate(m)).length;
+            const femaleLitCount = dbMembers.filter(m => m.gender === 'Female' && isLiterate(m)).length;
+
+            const overallLitRate = totalPop > 0 ? ((literateCount / totalPop) * 100).toFixed(1) : '0.0';
+            const maleLitRate = males > 0 ? ((maleLitCount / males) * 100).toFixed(1) : '0.0';
+            const femaleLitRate = females > 0 ? ((femaleLitCount / females) * 100).toFixed(1) : '0.0';
+
+            const topContainer = document.getElementById('analyticsHighlightTop');
+            if (topContainer) {
+                topContainer.innerHTML = `
+                    <!-- Male / Female Summary Card -->
+                    <div class="p-5 rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50/70 to-indigo-50/40 space-y-4">
+                        <div class="flex items-center justify-between border-b border-blue-200/70 pb-2.5">
+                            <div>
+                                <h3 class="text-sm font-extrabold uppercase tracking-wider text-blue-950">⚖️ Male & Female Population Summary (पुरुष एवं महिला अनुपात)</h3>
+                                <p class="text-[11px] text-slate-600">Total Registered Population: <strong>${totalPop}</strong> Members</p>
+                            </div>
+                            <span class="px-2.5 py-1 rounded-lg bg-blue-900 text-white text-xs font-bold">
+                                Sex Ratio: ${sexRatio} F / 1000 M
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="p-3.5 rounded-xl bg-white border border-blue-100 shadow-2xs">
+                                <p class="text-xs font-semibold text-blue-700">👨 Male (पुरुष सदस्य)</p>
+                                <p class="text-2xl font-extrabold text-slate-900 mt-0.5">${males} <span class="text-xs font-semibold text-blue-600">(${malePct}%)</span></p>
+                            </div>
+                            <div class="p-3.5 rounded-xl bg-white border border-pink-100 shadow-2xs">
+                                <p class="text-xs font-semibold text-pink-700">👩 Female (महिला सदस्य)</p>
+                                <p class="text-2xl font-extrabold text-slate-900 mt-0.5">${females} <span class="text-xs font-semibold text-pink-600">(${femalePct}%)</span></p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between text-xs font-semibold">
+                                <span class="text-blue-800">Male: ${malePct}%</span>
+                                ${otherGen > 0 ? `<span class="text-slate-600">Other: ${otherGen}</span>` : ''}
+                                <span class="text-pink-700">Female: ${femalePct}%</span>
+                            </div>
+                            <div class="w-full h-3 bg-pink-200 rounded-full overflow-hidden flex">
+                                <div class="h-full bg-blue-600 transition-all" style="width: ${malePct}%"></div>
+                                <div class="h-full bg-pink-500 transition-all" style="width: ${femalePct}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Samaj Literacy Rate Card -->
+                    <div class="p-5 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50/70 to-teal-50/40 space-y-4">
+                        <div class="flex items-center justify-between border-b border-emerald-200/70 pb-2.5">
+                            <div>
+                                <h3 class="text-sm font-extrabold uppercase tracking-wider text-emerald-950">📖 Samaj Literacy Rate Summary (समाज साक्षरता दर)</h3>
+                                <p class="text-[11px] text-slate-600">Educated / Literate: <strong>${literateCount}</strong> of <strong>${totalPop}</strong> Members</p>
+                            </div>
+                            <span class="px-3 py-1 rounded-lg bg-emerald-700 text-white text-sm font-extrabold">
+                                ${overallLitRate}% Literate
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="p-3 rounded-xl bg-white border border-emerald-100 shadow-2xs text-center">
+                                <p class="text-[11px] font-semibold text-emerald-800">Overall (कुल साक्षरता)</p>
+                                <p class="text-xl font-extrabold text-emerald-950 mt-0.5">${overallLitRate}%</p>
+                                <p class="text-[10px] text-slate-500">${literateCount} Literate</p>
+                            </div>
+                            <div class="p-3 rounded-xl bg-white border border-blue-100 shadow-2xs text-center">
+                                <p class="text-[11px] font-semibold text-blue-800">Male (पुरुष साक्षरता)</p>
+                                <p class="text-xl font-extrabold text-blue-950 mt-0.5">${maleLitRate}%</p>
+                                <p class="text-[10px] text-slate-500">${maleLitCount}/${males} Male</p>
+                            </div>
+                            <div class="p-3 rounded-xl bg-white border border-pink-100 shadow-2xs text-center">
+                                <p class="text-[11px] font-semibold text-pink-800">Female (महिला साक्षरता)</p>
+                                <p class="text-xl font-extrabold text-pink-950 mt-0.5">${femaleLitRate}%</p>
+                                <p class="text-[10px] text-slate-500">${femaleLitCount}/${females} Female</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between text-xs font-semibold">
+                                <span class="text-emerald-800">Literate / Educated: ${literateCount} (${overallLitRate}%)</span>
+                                <span class="text-slate-500">Non-Formal / Unspecified: ${nonFormalCount}</span>
+                            </div>
+                            <div class="w-full h-3 bg-slate-200 rounded-full overflow-hidden">
+                                <div class="h-full bg-emerald-600 rounded-full transition-all" style="width: ${overallLitRate}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const ageGroups = {
+                'Children (<18)': dbMembers.filter(m => m.age < 18).length,
+                'Youth (18-35)': dbMembers.filter(m => m.age >= 18 && m.age <= 35).length,
+                'Adults (36-59)': dbMembers.filter(m => m.age >= 36 && m.age <= 59).length,
+                'Seniors (60+)': dbMembers.filter(m => m.age >= 60).length
+            };
+            const makeCard = (title, obj, color) => {
+                const entries = Object.entries(obj);
+                const total = dbMembers.length || 1;
+                return `<div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 space-y-3">
+                    <h3 class="text-sm font-extrabold uppercase text-slate-800 border-b pb-2">${title}</h3>
+                    ${entries.map(([k, v]) => {
+                        const pct = Math.round((v / total) * 100);
+                        return `<div class="space-y-1"><div class="flex justify-between text-xs"><span>${escapeHtml(k)}</span><strong>${v} (${pct}%)</strong></div><div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden"><div class="h-full ${color}" style="width:${pct}%"></div></div></div>`;
+                    }).join('')}
+                </div>`;
+            };
+            document.getElementById('analyticsPanels').innerHTML = [
+                makeCard('Gender Distribution (पुरुष / महिला संख्या)', countBy(m => m.gender), 'bg-indigo-600'),
+                makeCard('Age Distribution (आयु वर्ग)', ageGroups, 'bg-blue-600'),
+                makeCard('Marital Status (वैवाहिक स्थिति)', countBy(m => m.marital_status), 'bg-rose-600'),
+                makeCard('Education Levels (शिक्षा का स्तर)', countBy(m => m.education_level), 'bg-purple-600'),
+                makeCard('Employment Status (व्यवसाय एवं रोजगार)', countBy(m => m.employment_status), 'bg-emerald-600'),
+                makeCard('Mohalla Breakdown (मोहल्ला अनुसार)', countBy(m => m.mohalla_area), 'bg-amber-500'),
+                makeCard('Blood Groups (रक्त समूह)', countBy(m => m.blood_group), 'bg-red-600')
+            ].join('');
+        }
+
+        function exportCsvLocal() {
+            const headers = ['Member Code','Family ID','Is Head','Relation','Full Name','Hindi Name','Gender','DOB','Age','Blood Group','Marital Status','Father Name','Mother Name','Husband/Wife Name','Children','Total Family Members','Family Notes','Gotra','Mohalla','Current Address','Phone','WhatsApp','Education','Degree','Employment','Occupation','Firm/Employer'];
+            const rows = dbMembers.map(m => [
+                m.member_code, m.family_id, m.is_head, m.relation_to_head, m.full_name, m.full_name_hi, m.gender, m.dob, m.age, m.blood_group, m.marital_status, m.father_name, m.mother_name, m.spouse_name, m.children_count, m.total_family_members, m.family_members_notes, m.gotra_subcaste, m.mohalla_area, m.current_address, m.phone_primary, m.phone_whatsapp, m.education_level, m.education_stream, m.employment_status, m.occupation_title, m.business_or_employer
+            ]);
+            const csvContent = '\ufeff' + [headers, ...rows].map(r => r.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'Chheepa_Samaj_Khanda_Falsa_Jodhpur.csv';
+            a.click();
+        }
+
+        function exportJsonLocal() {
+            const blob = new Blob([JSON.stringify({ samaj: 'Chheepa Samaj Khanda Falsa, Jodhpur', members: dbMembers }, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'Chheepa_Samaj_Khanda_Falsa_Backup.json';
+            a.click();
+        }
+
+        async function importJsonLocal(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            try {
+                const data = JSON.parse(await file.text());
+                if (Array.isArray(data.members)) {
+                    dbMembers = data.members;
+                    saveToStorage();
+                    updateDashboard();
+                    showToast(`Restored ${dbMembers.length} member records!`);
+                }
+            } catch (e) {
+                showToast('Invalid JSON file', true);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadFromStorage);
+    </script>
+</body>
+</html>
