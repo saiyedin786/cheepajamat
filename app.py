@@ -304,7 +304,7 @@ def list_members():
     marital_status = request.args.get('marital_status', '').strip()
     education_level = request.args.get('education_level', '').strip()
     employment_status = request.args.get('employment_status', '').strip()
-    mohalla_area = request.args.get('mohalla_area', '').strip()
+    mohalla_area = (request.args.get('mohalla_area') or request.args.get('area') or '').strip()
     blood_group = request.args.get('blood_group', '').strip()
     only_heads = request.args.get('only_heads', '').strip()
     min_age = request.args.get('min_age', '').strip()
@@ -351,8 +351,9 @@ def list_members():
         query += " AND employment_status = ?"
         params.append(employment_status)
     if mohalla_area:
-        query += " AND mohalla_area LIKE ?"
-        params.append(f"%{mohalla_area}%")
+        space_flexible_like = "%" + "%".join(mohalla_area.split()) + "%"
+        query += " AND (mohalla_area = ? OR mohalla_area LIKE ? OR mohalla_area LIKE ?)"
+        params.extend([mohalla_area, f"%{mohalla_area}%", space_flexible_like])
     if blood_group:
         query += " AND blood_group = ?"
         params.append(blood_group)
@@ -366,10 +367,58 @@ def list_members():
         params.append(int(max_age))
 
     query += " ORDER BY family_id ASC, is_head DESC, age DESC"
-    c.execute(query, params)
-    rows = [dict(r) for r in c.fetchall()]
+
+    # Pagination support
+    page = request.args.get('page', '1').strip()
+    per_page = request.args.get('per_page', '').strip()
+
+    if per_page.isdigit() and int(per_page) > 0:
+        per_page_int = int(per_page)
+        page_int = max(1, int(page)) if page.isdigit() else 1
+
+        # First get total count
+        count_query = query.replace("SELECT *", "SELECT COUNT(*)", 1)
+        c.execute(count_query, params)
+        total_count = c.fetchone()[0]
+        total_pages = max(1, (total_count + per_page_int - 1) // per_page_int)
+        page_int = min(page_int, total_pages)
+
+        offset = (page_int - 1) * per_page_int
+        query += " LIMIT ? OFFSET ?"
+        params.extend([per_page_int, offset])
+
+        c.execute(query, params)
+        rows = [dict(r) for r in c.fetchall()]
+        conn.close()
+        return jsonify({
+            'members': rows,
+            'count': len(rows),
+            'total_count': total_count,
+            'total_pages': total_pages,
+            'current_page': page_int,
+            'per_page': per_page_int
+        })
+    else:
+        c.execute(query, params)
+        rows = [dict(r) for r in c.fetchall()]
+        conn.close()
+        return jsonify({'members': rows, 'count': len(rows)})
+
+
+@app.route('/api/areas', methods=['GET'])
+def list_areas():
+    conn = get_db()
+    c = conn.cursor()
+    c.execute("""
+        SELECT mohalla_area as name, COUNT(*) as count 
+        FROM members 
+        WHERE mohalla_area IS NOT NULL AND TRIM(mohalla_area) != ''
+        GROUP BY mohalla_area 
+        ORDER BY mohalla_area ASC
+    """)
+    areas = [dict(r) for r in c.fetchall()]
     conn.close()
-    return jsonify({'members': rows, 'count': len(rows)})
+    return jsonify({'areas': areas, 'count': len(areas)})
 
 
 @app.route('/api/members/<int:member_id>', methods=['GET'])
@@ -630,6 +679,15 @@ def get_stats():
     }
 
     c.execute("""
+        SELECT mohalla_area as name, COUNT(*) as count 
+        FROM members 
+        WHERE mohalla_area IS NOT NULL AND TRIM(mohalla_area) != ''
+        GROUP BY mohalla_area 
+        ORDER BY mohalla_area ASC
+    """)
+    all_areas = [dict(r) for r in c.fetchall()]
+
+    c.execute("""
         SELECT family_id,
                MAX(CASE WHEN is_head = 1 THEN full_name ELSE NULL END) as head_name,
                MAX(mohalla_area) as mohalla_area,
@@ -652,6 +710,7 @@ def get_stats():
         'education_counts': education_counts,
         'employment_counts': employment_counts,
         'mohalla_counts': mohalla_counts,
+        'areas': all_areas,
         'blood_counts': blood_counts,
         'age_groups': {
             'Children (<18)': age_row.get('under_18') or 0,
@@ -665,6 +724,7 @@ def get_stats():
 
 
 @app.route('/api/export/csv', methods=['GET'])
+@admin_required
 def export_csv():
     conn = get_db()
     c = conn.cursor()
@@ -713,6 +773,7 @@ def export_csv():
 
 
 @app.route('/api/export/excel', methods=['GET'])
+@admin_required
 def export_excel():
     conn = get_db()
     c = conn.cursor()
@@ -802,6 +863,7 @@ def export_excel():
 
 
 @app.route('/api/export/json', methods=['GET'])
+@admin_required
 def export_json():
     conn = get_db()
     c = conn.cursor()
@@ -817,6 +879,7 @@ def export_json():
 
 
 @app.route('/api/import/json', methods=['POST'])
+@admin_required
 def import_json():
     payload = request.json or {}
     members_list = payload.get('members', [])
@@ -1355,7 +1418,7 @@ def normalize_record(item, conn):
                 break
 
     gotra_subcaste = (item.get('gotra_subcaste') or extracted_gotra or '').strip()
-    mohalla_area = (item.get('mohalla_area') or extracted_mohalla or 'Khanda Falsa').strip()
+    mohalla_area = ' '.join((item.get('mohalla_area') or extracted_mohalla or 'Khanda Falsa').split())
     special_notes = (item.get('special_notes') or item.get('remark') or item.get('remarks') or '').strip()
 
     return {
@@ -1758,10 +1821,12 @@ def admin_clear_data():
 
 if __name__ == '__main__':
     init_db()
+    host = os.environ.get('HOST', '0.0.0.0')
+    port = int(os.environ.get('PORT', 5000))
     print("=" * 65)
     print("  CHHEEPA SAMAJ KHANDA FALSA, JODHPUR - CENSUS & DIRECTORY PORTAL")
-    print("  Public Portal: http://127.0.0.1:5000")
-    print("  Admin Panel:   http://127.0.0.1:5000/admin")
-    print("  Admin Login:   http://127.0.0.1:5000/admin/login")
+    print(f"  Public Portal: http://{host}:{port}")
+    print(f"  Admin Panel:   http://{host}:{port}/admin")
+    print(f"  Admin Login:   http://{host}:{port}/admin/login")
     print("=" * 65)
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(host=host, port=port, debug=False)
