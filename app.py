@@ -1829,8 +1829,8 @@ if __name__ == '__main__':
     print(f"  Admin Panel:   http://{host}:{port}/admin")
     print(f"  Admin Login:   http://{host}:{port}/admin/login")
     print("=" * 65)
-<<<<<<< HEAD
+
     app.run(host=host, port=port, debug=False)
-=======
+
     app.run(host='0.0.0.0', port=5000, debug=True)
->>>>>>> 07342f3bf90d22885f6341b8cc17814065fd26bd
+
