@@ -1,6 +1,6 @@
-# Chheepa Samaj Khanda Falsa, Jodhpur — Census & Directory Portal
+# Chhipa Samaj Khanda Falsa, Jodhpur — Census & Directory Portal
 
-A modern Census & Directory web application with an administrative panel for **Chheepa Samaj Khanda Falsa, Jodhpur**.
+A modern Census & Directory web application with an administrative panel for **Chhipa Samaj Khanda Falsa, Jodhpur**.
 
 ---
 

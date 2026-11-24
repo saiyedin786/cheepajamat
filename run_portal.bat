@@ -1,13 +1,13 @@
 @echo off
-title Chheepa Samaj Khanda Falsa Jodhpur - Portal Launcher
+title Chhipa Samaj Khanda Falsa Jodhpur - Portal Launcher
 echo ====================================================================
-echo   CHHEEPA SAMAJ KHANDA FALSA, JODHPUR - CENSUS ^& DIRECTORY PORTAL
+echo   CHHIPA SAMAJ KHANDA FALSA, JODHPUR - CENSUS ^& DIRECTORY PORTAL
 echo ====================================================================
 echo.
 python --version >nul 2>&1
 if %errorlevel% neq 0 (
     echo [INFO] Python was not detected in PATH. Opening Standalone Browser Edition...
-    start "" "chheepa_samaj_standalone.html"
+    start "" "chhipa_samaj_standalone.html"
     exit /b 0
 )
 

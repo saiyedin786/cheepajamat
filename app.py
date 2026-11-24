@@ -15,7 +15,7 @@ app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024  # 32MB max upload size
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, 'chheepa_samaj.db')
+DB_PATH = os.path.join(BASE_DIR, 'chhipa_samaj.db')
 
 # Ensure consistent persistent secret key for admin session cookies
 SECRET_KEY_FILE = os.path.join(BASE_DIR, '.flask_secret_key')
@@ -24,7 +24,7 @@ if os.path.exists(SECRET_KEY_FILE):
         with open(SECRET_KEY_FILE, 'rb') as f:
             app.secret_key = f.read()
     except Exception:
-        app.secret_key = b'chheepa_samaj_khanda_falsa_admin_secret_key_2026'
+        app.secret_key = b'chhipa_samaj_khanda_falsa_admin_secret_key_2026'
 else:
     try:
         new_key = os.urandom(32)
@@ -32,7 +32,7 @@ else:
             f.write(new_key)
         app.secret_key = new_key
     except Exception:
-        app.secret_key = b'chheepa_samaj_khanda_falsa_admin_secret_key_2026'
+        app.secret_key = b'chhipa_samaj_khanda_falsa_admin_secret_key_2026'
 
 
 def get_db():
@@ -55,30 +55,30 @@ def calculate_age(dob_str):
 SAMPLE_MEMBERS = [
     (
         'CSJ-0001', 'FAM-KF-101', 1, 'Self (Head)',
-        'Haji Mohammed Farooq Chheepa', 'हाजी मोहम्मद फारूक छीपा',
+        'Haji Mohammed Farooq Chhipa', 'हाजी मोहम्मद फारूक छीपा',
         'Male', '1966-04-12', 60, 'B+', 'Married',
-        'Late Haji Abdul Rahim Chheepa', 'Late Hajjan Fatima Begum',
+        'Late Haji Abdul Rahim Chhipa', 'Late Hajjan Fatima Begum',
         'Rashida Begum', 4, 6,
         'Imran (Son), Irfan (Son), Rukhsar (Daughter-Married), Amina (Daughter-in-law)',
-        'Solanki Chheepa', 'Khanda Falsa, Jodhpur', 'Adaa Bazaar / Khanda Falsa Chowk',
+        'Solanki Chhipa', 'Khanda Falsa, Jodhpur', 'Adaa Bazaar / Khanda Falsa Chowk',
         'House No. 42, Near Jama Masjid, Khanda Falsa, Jodhpur',
         'House No. 42, Near Jama Masjid, Khanda Falsa, Jodhpur',
         'Jodhpur', '342001', '9829011223', '9829011223', 'farooq.textiles@example.com',
         'Graduate', 'B.Com', 'Jai Narain Vyas University (JNVU), Jodhpur',
         'Business / Self-Employed', 'Traditional Handblock & Textile Merchant',
-        'Farooq & Sons Chheepa Handloom Exports', 'Main Road, Khanda Falsa, Jodhpur',
+        'Farooq & Sons Chhipa Handloom Exports', 'Main Road, Khanda Falsa, Jodhpur',
         '5 - 10 Lakh', 'Dabu & Bagru Handblock Printing, Textile Dyeing',
         '4821', 'JAN-29384711', 'Samaj Patron / Elder Committee',
-        'Active contributor to Chheepa Jamaat education scholarship fund.', ''
+        'Active contributor to Chhipa Samaj education scholarship fund.', ''
     ),
     (
         'CSJ-0002', 'FAM-KF-101', 0, 'Wife',
         'Rashida Begum', 'रशीदा बेगम',
         'Female', '1970-08-20', 56, 'O+', 'Married',
-        'Abdul Sattar Chheepa', 'Zainab Bibi',
-        'Haji Mohammed Farooq Chheepa', 4, 6,
+        'Abdul Sattar Chhipa', 'Zainab Bibi',
+        'Haji Mohammed Farooq Chhipa', 4, 6,
         'Wife of Head of Family (FAM-KF-101)',
-        'Chauhan Chheepa', 'Pipar City / Jodhpur', 'Adaa Bazaar / Khanda Falsa Chowk',
+        'Chauhan Chhipa', 'Pipar City / Jodhpur', 'Adaa Bazaar / Khanda Falsa Chowk',
         'House No. 42, Near Jama Masjid, Khanda Falsa, Jodhpur',
         'House No. 42, Near Jama Masjid, Khanda Falsa, Jodhpur',
         'Jodhpur', '342001', '9829011224', '9829011224', '',
@@ -91,15 +91,15 @@ SAMPLE_MEMBERS = [
     ),
     (
         'CSJ-0003', 'FAM-KF-101', 0, 'Son',
-        'Er. Imran Ahmed Chheepa', 'इमरान अहमद छीपा',
+        'Er. Imran Ahmed Chhipa', 'इमरान अहमद छीपा',
         'Male', '1993-11-05', 32, 'B+', 'Married',
-        'Haji Mohammed Farooq Chheepa', 'Rashida Begum',
+        'Haji Mohammed Farooq Chhipa', 'Rashida Begum',
         'Dr. Amina Parveen', 1, 6,
-        'Son of Haji Mohammed Farooq Chheepa',
-        'Solanki Chheepa', 'Khanda Falsa, Jodhpur', 'Adaa Bazaar / Khanda Falsa Chowk',
+        'Son of Haji Mohammed Farooq Chhipa',
+        'Solanki Chhipa', 'Khanda Falsa, Jodhpur', 'Adaa Bazaar / Khanda Falsa Chowk',
         'House No. 42, Near Jama Masjid, Khanda Falsa, Jodhpur',
         'House No. 42, Near Jama Masjid, Khanda Falsa, Jodhpur',
-        'Jodhpur', '342001', '9414122334', '9414122334', 'imran.chheepa@example.com',
+        'Jodhpur', '342001', '9414122334', '9414122334', 'imran.chhipa@example.com',
         'Post-Graduate / Professional', 'B.Tech (Computer Science)', 'MBM Engineering College, Jodhpur',
         'Private Sector Job', 'Senior Software Architect',
         'Marwar Tech Solutions Pvt Ltd', 'IT Park, Mia Basni, Jodhpur',
@@ -109,12 +109,12 @@ SAMPLE_MEMBERS = [
     ),
     (
         'CSJ-0004', 'FAM-KF-101', 0, 'Daughter-in-Law',
-        'Dr. Amina Parveen Chheepa', 'डॉ. अमीना परवीन छीपा',
+        'Dr. Amina Parveen Chhipa', 'डॉ. अमीना परवीन छीपा',
         'Female', '1995-02-18', 31, 'A+', 'Married',
-        'Mohammed Yusuf Chheepa', 'Salma Bano',
-        'Er. Imran Ahmed Chheepa', 1, 6,
-        'Wife of Er. Imran Ahmed Chheepa',
-        'Bhati Chheepa', 'Sojat Gate, Jodhpur', 'Adaa Bazaar / Khanda Falsa Chowk',
+        'Mohammed Yusuf Chhipa', 'Salma Bano',
+        'Er. Imran Ahmed Chhipa', 1, 6,
+        'Wife of Er. Imran Ahmed Chhipa',
+        'Bhati Chhipa', 'Sojat Gate, Jodhpur', 'Adaa Bazaar / Khanda Falsa Chowk',
         'House No. 42, Near Jama Masjid, Khanda Falsa, Jodhpur',
         'House No. 42, Near Jama Masjid, Khanda Falsa, Jodhpur',
         'Jodhpur', '342001', '9414199887', '9414199887', 'dr.amina@example.com',
@@ -127,33 +127,33 @@ SAMPLE_MEMBERS = [
     ),
     (
         'CSJ-0005', 'FAM-KF-102', 1, 'Self (Head)',
-        'Abdul Qadir Chheepa', 'अब्दुल कादिर छीपा',
+        'Abdul Qadir Chhipa', 'अब्दुल कादिर छीपा',
         'Male', '1978-06-15', 48, 'AB+', 'Married',
-        'Haji Ghulam Nabi Chheepa', 'Razia Sultan',
+        'Haji Ghulam Nabi Chhipa', 'Razia Sultan',
         'Shabnam Bano', 3, 5,
         'Zaid (Son - Student), Sana (Daughter - Student), Rehan (Son)',
-        'Panwar Chheepa', 'Khanda Falsa, Jodhpur', 'Bhistiyon Ka Bas / Khanda Falsa',
+        'Panwar Chhipa', 'Khanda Falsa, Jodhpur', 'Bhistiyon Ka Bas / Khanda Falsa',
         'Plot 19, Gali No. 3, Khanda Falsa, Jodhpur',
         'Plot 19, Gali No. 3, Khanda Falsa, Jodhpur',
         'Jodhpur', '342001', '9928055667', '9928055667', 'qadir.dyers@example.com',
         'Higher Secondary (12th)', 'Commerce', 'Mahesh Senior Secondary School, Jodhpur',
         'Business / Self-Employed', 'Screen Printing & Fabric Processing Owner',
-        'Marwar Chheepa Tex Prints', 'Basni Phase II, Jodhpur',
+        'Marwar Chhipa Tex Prints', 'Basni Phase II, Jodhpur',
         '5 - 10 Lakh', 'Textile Screen Printing & Export Processing',
         '6104', 'JAN-88412093', 'General Secretary',
-        'Secretary of Khanda Falsa Chheepa Jamaat Committee.', ''
+        'Secretary of Khanda Falsa Chhipa Samaj Committee.', ''
     ),
     (
         'CSJ-0006', 'FAM-KF-102', 0, 'Daughter',
-        'Sana Qadir Chheepa', 'सना कादिर छीपा',
+        'Sana Qadir Chhipa', 'सना कादिर छीपा',
         'Female', '2004-09-10', 22, 'O+', 'Single',
-        'Abdul Qadir Chheepa', 'Shabnam Bano',
+        'Abdul Qadir Chhipa', 'Shabnam Bano',
         '', 0, 5,
-        'Daughter of Abdul Qadir Chheepa',
-        'Panwar Chheepa', 'Khanda Falsa, Jodhpur', 'Bhistiyon Ka Bas / Khanda Falsa',
+        'Daughter of Abdul Qadir Chhipa',
+        'Panwar Chhipa', 'Khanda Falsa, Jodhpur', 'Bhistiyon Ka Bas / Khanda Falsa',
         'Plot 19, Gali No. 3, Khanda Falsa, Jodhpur',
         'Plot 19, Gali No. 3, Khanda Falsa, Jodhpur',
-        'Jodhpur', '342001', '9928055668', '9928055668', 'sana.chheepa@example.com',
+        'Jodhpur', '342001', '9928055668', '9928055668', 'sana.chhipa@example.com',
         'Graduate', 'CA Intermediate & B.Com (Hons)', 'JNVU / ICAI Jodhpur Branch',
         'Student', 'Chartered Accountancy Aspirant',
         'ICAI Jodhpur', 'Jodhpur',
@@ -225,7 +225,7 @@ def init_db():
             username TEXT UNIQUE NOT NULL,
             password_hash TEXT NOT NULL,
             full_name TEXT DEFAULT 'Chief Administrator',
-            email TEXT DEFAULT 'admin@chheepasamaj.org',
+            email TEXT DEFAULT 'admin@chhipasamaj.org',
             last_login TEXT DEFAULT '',
             created_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
@@ -237,7 +237,7 @@ def init_db():
         default_pwd_hash = generate_password_hash('admin123')
         c.execute('''
             INSERT INTO admin_users (username, password_hash, full_name, email, last_login)
-            VALUES ('admin', ?, 'Chief Samaj Administrator', 'admin@chheepasamaj.org', '')
+            VALUES ('admin', ?, 'Chief Samaj Administrator', 'admin@chhipasamaj.org', '')
         ''', (default_pwd_hash,))
         conn.commit()
 
@@ -768,7 +768,7 @@ def export_csv():
     mem = io.BytesIO()
     mem.write(output.getvalue().encode('utf-8'))
     mem.seek(0)
-    filename = f"Chheepa_Samaj_Khanda_Falsa_Jodhpur_{datetime.now().strftime('%Y%m%d')}.csv"
+    filename = f"Chhipa_Samaj_Khanda_Falsa_Jodhpur_{datetime.now().strftime('%Y%m%d')}.csv"
     return send_file(mem, mimetype='text/csv', as_attachment=True, download_name=filename)
 
 
@@ -853,7 +853,7 @@ def export_excel():
     mem = io.BytesIO()
     wb.save(mem)
     mem.seek(0)
-    filename = f"Chheepa_Samaj_Khanda_Falsa_Jodhpur_{datetime.now().strftime('%Y%m%d')}.xlsx"
+    filename = f"Chhipa_Samaj_Khanda_Falsa_Jodhpur_{datetime.now().strftime('%Y%m%d')}.xlsx"
     return send_file(
         mem,
         mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -872,9 +872,9 @@ def export_json():
     conn.close()
 
     mem = io.BytesIO()
-    mem.write(json.dumps({'samaj': 'Chheepa Samaj Khanda Falsa, Jodhpur', 'exported_at': datetime.now().isoformat(), 'members': rows}, ensure_ascii=False, indent=2).encode('utf-8'))
+    mem.write(json.dumps({'samaj': 'Chhipa Samaj Khanda Falsa, Jodhpur', 'exported_at': datetime.now().isoformat(), 'members': rows}, ensure_ascii=False, indent=2).encode('utf-8'))
     mem.seek(0)
-    filename = f"Chheepa_Samaj_Khanda_Falsa_Backup_{datetime.now().strftime('%Y%m%d')}.json"
+    filename = f"Chhipa_Samaj_Khanda_Falsa_Backup_{datetime.now().strftime('%Y%m%d')}.json"
     return send_file(mem, mimetype='application/json', as_attachment=True, download_name=filename)
 
 
@@ -1639,21 +1639,21 @@ def admin_upload_commit():
 SAMPLE_TEMPLATE_DATA = [
     [
         'CSJ-0001', 'FAM-KF-101', 1, 'Self (Head)',
-        'Haji Mohammed Farooq Chheepa', 'हाजी मोहम्मद फारूक छीपा', 'Male', '1966-04-12', 60,
-        'B+', 'Married', 'Late Abdul Rahim Chheepa', 'Fatima Begum', 'Rashida Begum',
-        4, 6, 'Elder family member in Khanda Falsa', 'Solanki Chheepa', 'Khanda Falsa, Jodhpur',
+        'Haji Mohammed Farooq Chhipa', 'हाजी मोहम्मद फारूक छीपा', 'Male', '1966-04-12', 60,
+        'B+', 'Married', 'Late Abdul Rahim Chhipa', 'Fatima Begum', 'Rashida Begum',
+        4, 6, 'Elder family member in Khanda Falsa', 'Solanki Chhipa', 'Khanda Falsa, Jodhpur',
         'Adaa Bazaar / Khanda Falsa Chowk', 'House 42, Near Jama Masjid, Khanda Falsa',
         'House 42, Khanda Falsa, Jodhpur', 'Jodhpur', '342001', '9829011223', '9829011223',
         'farooq.textiles@example.com', 'Graduate', 'B.Com', 'JNVU Jodhpur',
         'Business / Self-Employed', 'Traditional Handblock Artisan & Merchant',
-        'Farooq Chheepa Textiles', 'Main Road Khanda Falsa', '5 - 10 Lakh',
-        'Dabu & Bagru Handblock Printing', '4821', 'JAN-29384711', 'Elder Patron', 'Active Jamaat Member'
+        'Farooq Chhipa Textiles', 'Main Road Khanda Falsa', '5 - 10 Lakh',
+        'Dabu & Bagru Handblock Printing', '4821', 'JAN-29384711', 'Elder Patron', 'Active Samaj Member'
     ],
     [
         'CSJ-0002', 'FAM-KF-101', 0, 'Daughter-in-Law',
-        'Dr. Amina Parveen Chheepa', 'डॉ. अमीना परवीन छीपा', 'Female', '1995-02-18', 31,
-        'A+', 'Married', 'Mohammed Yusuf Chheepa', 'Salma Bano', 'Er. Imran Ahmed Chheepa',
-        1, 6, 'Pediatrician', 'Bhati Chheepa', 'Sojat Gate, Jodhpur', 'Adaa Bazaar / Khanda Falsa Chowk',
+        'Dr. Amina Parveen Chhipa', 'डॉ. अमीना परवीन छीपा', 'Female', '1995-02-18', 31,
+        'A+', 'Married', 'Mohammed Yusuf Chhipa', 'Salma Bano', 'Er. Imran Ahmed Chhipa',
+        1, 6, 'Pediatrician', 'Bhati Chhipa', 'Sojat Gate, Jodhpur', 'Adaa Bazaar / Khanda Falsa Chowk',
         'House 42, Near Jama Masjid, Khanda Falsa', 'House 42, Khanda Falsa, Jodhpur',
         'Jodhpur', '342001', '9414199887', '9414199887', 'dr.amina@example.com',
         'Doctorate / Medical', 'MBBS, MD (Pediatrics)', 'Dr. S.N. Medical College Jodhpur',
@@ -1689,7 +1689,7 @@ def download_csv_template():
     mem = io.BytesIO()
     mem.write(output.getvalue().encode('utf-8'))
     mem.seek(0)
-    return send_file(mem, mimetype='text/csv', as_attachment=True, download_name='Chheepa_Samaj_Template.csv')
+    return send_file(mem, mimetype='text/csv', as_attachment=True, download_name='Chhipa_Samaj_Template.csv')
 
 
 @app.route('/admin/api/templates/excel')
@@ -1737,7 +1737,7 @@ def download_excel_template():
         mem,
         mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         as_attachment=True,
-        download_name='Chheepa_Samaj_Template.xlsx'
+        download_name='Chhipa_Samaj_Template.xlsx'
     )
 
 
@@ -1760,14 +1760,14 @@ def download_json_template():
         sample_list.append(dict(zip(keys, r)))
 
     data = {
-        'samaj': 'Chheepa Samaj Khanda Falsa, Jodhpur',
+        'samaj': 'Chhipa Samaj Khanda Falsa, Jodhpur',
         'description': 'Sample JSON census template for admin upload',
         'members': sample_list
     }
     mem = io.BytesIO()
     mem.write(json.dumps(data, ensure_ascii=False, indent=2).encode('utf-8'))
     mem.seek(0)
-    return send_file(mem, mimetype='application/json', as_attachment=True, download_name='Chheepa_Samaj_Template.json')
+    return send_file(mem, mimetype='application/json', as_attachment=True, download_name='Chhipa_Samaj_Template.json')
 
 
 # ==========================================
@@ -1824,7 +1824,7 @@ if __name__ == '__main__':
     host = os.environ.get('HOST', '0.0.0.0')
     port = int(os.environ.get('PORT', 5000))
     print("=" * 65)
-    print("  CHHEEPA SAMAJ KHANDA FALSA, JODHPUR - CENSUS & DIRECTORY PORTAL")
+    print("  CHHIPA SAMAJ KHANDA FALSA, JODHPUR - CENSUS & DIRECTORY PORTAL")
     print(f"  Public Portal: http://{host}:{port}")
     print(f"  Admin Panel:   http://{host}:{port}/admin")
     print(f"  Admin Login:   http://{host}:{port}/admin/login")
